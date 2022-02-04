@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>hello, world</title>
-  </head>
-  <body>
-    <div>
-      <span>
-        yup
-      </span>
-    </div>
-  </body>
+    <head>
+        <title>
+            intentionally left blank
+        </title>
+    </head>
+    <body>
+        <!-- html bits -->
+        <p style="color: blue !important;">
+            these words are likely red - because d3 has higher precedence than inline styles.
+        </p>
+        <p>
+            these words are likely red.
+        </p>
+        <hr />
+        <div>
+            <svg id="treemap" width="960" height="570" />
+        </div>
+
+
+        <!-- dependencies -->
+        <script src="./resources/js/libs/vue_2.6.14.js"></script>
+        <script src="./resources/js/libs/d3_7.3.0.js"></script>
+
+        <!-- functionality -->
+        <script src="./resources/js/helpers/default.js"></script>
+    </body>
 </html>
