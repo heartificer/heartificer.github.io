@@ -1,0 +1,28 @@
+{
+    "name": "csci_780",
+    "version": "1.0.0",
+    "description": "placeholder repository for data visualization project",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/heartificer/csci_780.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/heartificer/csci_780/issues"
+    },
+    "homepage": "https://github.com/heartificer/csci_780#readme",
+    "devDependencies": {
+      "webpack": "^5.68.0",
+      "webpack-cli": "^4.9.2"
+    },
+    "dependencies": {
+      "d3": "^7.3.0"
+    }
+  }
+  
