@@ -2,7 +2,39 @@ path{
     fill: grey;
 }
 
-.Virginia
+svg{
+    background-color: lightblue;
+}
+
+#tooltip
+{
+    height: min-content;
+    min-width: 150px;
+    min-height: 50px;
+    background-color: rgba(119, 110, 110, 0.514);
+    padding: 5px;
+    padding-left: 10px;
+    margin: 0px;
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    display: none;
+    border-radius: 15px;
+}
+
+#tooltip_name
+{
+    color: yellow;
+    position: absolute;
+}
+
+.state :hover
+{
+    fill: yellow;
+}
+
+#map svg
 {
     fill: red;
-}
+    border:1px solid black;
+} 

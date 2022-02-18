@@ -1,28 +1,75 @@
-const getRandomStat = (size = 3) => {
-    let num = Math.floor(Math.random() * Date.now() );
-    let ens = num.toString().split('');
-    let val = ens.slice(ens.length - size, ens.length).join('')*1;
-    return val;
-}
+const states = [
+    { name:"California", population: "39538223", area: "163695", isCommonweath: "true", areaOrdinal: "3", populationOrdinal: "1",
+        children: [
+            { name: 'Los Angeles', population: '3971883', area: '469' },
+            { name: 'San Diego', population: '1394928', area: '372' },
+            { name: 'San Jose', population: '1026908', area: '181' },
+            { name: 'San Franciso', population: '884521', area: '47' },
+            { name: 'Fresno', population: '527438', area: '112' },
+        ]
+    },
+    { name:"Texas", population: "29145505", area: "268596", isCommonweath: "true", areaOrdinal: "2", populationOrdinal: "2" },
+    { name:"Florida", population: "21538187", area: "65758", isCommonweath: "true", areaOrdinal: "22", populationOrdinal: "3" },
+    { name:"New York", population: "20201249", area: "54555", isCommonweath: "true", areaOrdinal: "27", populationOrdinal: "4" },
+    { name:"Pennsylvania", population: "13002700", area: "46054", isCommonweath: "true", areaOrdinal: "33", populationOrdinal: "5" },
+    { name:"Illinois", population: "12812508", area: "57914", isCommonweath: "true", areaOrdinal: "25", populationOrdinal: "6" },
+    { name:"Ohio", population: "11799448", area: "44826", isCommonweath: "true", areaOrdinal: "34", populationOrdinal: "7" },
+    { name:"Georgia", population: "10711908", area: "59425", isCommonweath: "true", areaOrdinal: "24", populationOrdinal: "8" },
+    { name:"North Carolina", population: "10439388", area: "53819", isCommonweath: "true", areaOrdinal: "28", populationOrdinal: "9" },
+    { name:"Michigan", population: "10077331", area: "96714", isCommonweath: "true", areaOrdinal: "11", populationOrdinal: "10" },
+    { name:"New Jersey", population: "9288994", area: "8723", isCommonweath: "true", areaOrdinal: "47", populationOrdinal: "11" },
+    { name:"Virginia", population: "8631393", area: "42775", isCommonweath: "true", areaOrdinal: "35", populationOrdinal: "12" },
+    { name:"Washington", population: "7705281", area: "71298", isCommonweath: "true", areaOrdinal: "18", populationOrdinal: "13" },
+    { name:"Arizona", population: "7151502", area: "113990", isCommonweath: "true", areaOrdinal: "6", populationOrdinal: "14" },
+    { name:"Massachusetts", population: "7029917", area: "10554", isCommonweath: "true", areaOrdinal: "44", populationOrdinal: "15" },
+    { name:"Tennessee", population: "6910840", area: "42144", isCommonweath: "true", areaOrdinal: "36", populationOrdinal: "16" },
+    { name:"Indiana", population: "6785528", area: "36420", isCommonweath: "true", areaOrdinal: "38", populationOrdinal: "17" },
+    { name:"Maryland", population: "6177224", area: "12406", isCommonweath: "true", areaOrdinal: "42", populationOrdinal: "18" },
+    { name:"Missouri", population: "6154913", area: "69707", isCommonweath: "true", areaOrdinal: "21", populationOrdinal: "19" },
+    { name:"Wisconsin", population: "5893718", area: "65496", isCommonweath: "true", areaOrdinal: "23", populationOrdinal: "20" },
+    { name:"Colorado", population: "5773714", area: "104094", isCommonweath: "true", areaOrdinal: "8", populationOrdinal: "21" },
+    { name:"Minnesota", population: "5706494", area: "86936", isCommonweath: "true", areaOrdinal: "12", populationOrdinal: "22" },
+    { name:"South Carolina", population: "5118425", area: "32020", isCommonweath: "true", areaOrdinal: "40", populationOrdinal: "23" },
+    { name:"Alabama", population: "5024279", area: "52420", isCommonweath: "true", areaOrdinal: "30", populationOrdinal: "24" },
+    { name:"Louisiana", population: "4657757", area: "52378", isCommonweath: "true", areaOrdinal: "31", populationOrdinal: "25" },
+    { name:"Kentucky", population: "4505836", area: "40408", isCommonweath: "true", areaOrdinal: "37", populationOrdinal: "26" },
+    { name:"Oregon", population: "4237256", area: "98379", isCommonweath: "true", areaOrdinal: "9", populationOrdinal: "27" },
+    { name:"Oklahoma", population: "3959353", area: "69899", isCommonweath: "true", areaOrdinal: "20", populationOrdinal: "28" },
+    { name:"Connecticut", population: "3605944", area: "5543", isCommonweath: "true", areaOrdinal: "48", populationOrdinal: "29" },
+    { name:"Utah", population: "3271616", area: "84897", isCommonweath: "true", areaOrdinal: "13", populationOrdinal: "30" },
+    { name:"Iowa", population: "3190369", area: "56273", isCommonweath: "true", areaOrdinal: "26", populationOrdinal: "31" },
+    { name:"Nevada", population: "3104614", area: "110572", isCommonweath: "true", areaOrdinal: "7", populationOrdinal: "32" },
+    { name:"Arkansas", population: "3011524", area: "53179", isCommonweath: "true", areaOrdinal: "29", populationOrdinal: "33" },
+    { name:"Mississippi", population: "2961279", area: "48432", isCommonweath: "true", areaOrdinal: "32", populationOrdinal: "34" },
+    { name:"Kansas", population: "2937880", area: "82278", isCommonweath: "true", areaOrdinal: "15", populationOrdinal: "35" },
+    { name:"New Mexico", population: "2117522", area: "121590", isCommonweath: "true", areaOrdinal: "5", populationOrdinal: "36" },
+    { name:"Nebraska", population: "1961504", area: "77348", isCommonweath: "true", areaOrdinal: "16", populationOrdinal: "37" },
+    { name:"Idaho", population: "1839106", area: "83569", isCommonweath: "true", areaOrdinal: "14", populationOrdinal: "38" },
+    { name:"West Virginia", population: "1793716", area: "24230", isCommonweath: "true", areaOrdinal: "41", populationOrdinal: "39" },
+    { name:"Hawaii", population: "1455271", area: "10932", isCommonweath: "true", areaOrdinal: "43", populationOrdinal: "40" },
+    { name:"New Hampshire", population: "1377529", area: "9349", isCommonweath: "true", areaOrdinal: "46", populationOrdinal: "41" },
+    { name:"Maine", population: "1362359", area: "35380", isCommonweath: "true", areaOrdinal: "39", populationOrdinal: "42" },
+    { name:"Rhode Island", population: "1097379", area: "1545", isCommonweath: "true", areaOrdinal: "50", populationOrdinal: "43" },
+    { name:"Montana", population: "1084225", area: "147040", isCommonweath: "true", areaOrdinal: "4", populationOrdinal: "44" },
+    { name:"Delaware", population: "989948", area: "2489", isCommonweath: "true", areaOrdinal: "49", populationOrdinal: "45" },
+    { name:"South Dakota", population: "886667", area: "77116", isCommonweath: "true", areaOrdinal: "17", populationOrdinal: "46" },
+    { name:"North Dakota", population: "779094", area: "70698", isCommonweath: "true", areaOrdinal: "19", populationOrdinal: "47" },
+    { name:"Alaska", population: "733391", area: "665384", isCommonweath: "true", areaOrdinal: "1", populationOrdinal: "48" },
+    { name:"Vermont", population: "643077", area: "9616", isCommonweath: "true", areaOrdinal: "45", populationOrdinal: "49" },
+    { name:"Wyoming", population: "576851", area: "97813", isCommonweath: "true", areaOrdinal: "10", populationOrdinal: "50" },
 
-const mockStats = () => {
-    return [
-        { name: "Coal", value: getRandomStat() },
-        { name: "Solar", value: getRandomStat() },
-        { name: "Wind", value: getRandomStat() },
-        { name: "Wave", value: getRandomStat() },
-        { name: "Geothermal", value: getRandomStat() },
-    ];
-};
 
-const states = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia'];
+];
 
 let treemapdata = {
     name: "United States",
     children: states.map( state => {
         return {
-            name: state,
-            children: mockStats()
+            name: state.name,
+            area: state.area,
+            population: state.population,
+            areaOrdinal: state.areaOrdinal,
+            populationOrdinal: state.populationOrdinal
         }
     })
   }; 
