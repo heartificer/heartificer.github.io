@@ -18,19 +18,66 @@ document.addEventListener("DOMContentLoaded", function(event) {
             mapdata = data;
             console.log(data);
             const paths = svg.selectAll("path").data(data.features);
-            console.log(paths);
-            paths.enter().append("path").attr("class", n=>n.properties.NAME.replace(/\s/g, n.properties.NAME)).attr("d",d => pathgen(d));
+            paths.enter()
+                .append("path")
+                .attr("class", n=>n.properties.NAME.replace(/\s/g, n.properties.NAME) + " state")
+                .attr("d",d => pathgen(d))
+                .on("mousemove", function(e, d) {
+                    d3.select(this).style("fill", "yellow")
+                        .attr('fill-opacity', 0.3);
+                    tooltip_wake(e, d);
+                  })
+                .on("mouseleave", function(d) {
+                d3.select(this).style("fill", "grey")
+                    .attr('fill-opacity', 1);
+                    tooltip_sleep();
+                });
+            zoomFit(0, 0);
         });
     };
 
     function handleZoom(e) {
         d3.select('svg g')
         .attr('transform', e.transform);
+        console.log(e.transform);
     }
     
-    let zoom = d3.zoom().on('zoom', handleZoom);
+    function zoomFit(paddingPercent, transitionDuration) 
+    {
+        svg = d3.select("svg");
+        g = d3.select("svg g");
+        bb = g.node().getBBox();
+        widthv = bb.width;
+        heightv = bb.height;
+        console.log(g.node().getBBox());
+        if (widthv && heightv){
+            //TODO: This is janky. Need a more robust method. -AMH (It's also my fault)
+            scale = 4;
+            zoomf.scaleTo(svg, scale);
+            zoomf.translateTo(svg, widthv * 1.45, heightv * 1.65);
+        }
+    }
+
+
+    let zoomf = d3.zoom().on('zoom', handleZoom);
+
+    function tooltip_wake(e, d)
+    {
+        tt = document.getElementById("tooltip");
+        nametext = document.getElementById("tooltip_name");
+        nametext.innerHTML = d.properties["NAME"];
+        tt.style.left = e.pageX + "px";
+        tt.style.top = e.pageY + "px";
+        tt.style.display = "block";
+    }
+
+    function tooltip_sleep()
+    {
+        tt = document.getElementById("tooltip");
+        tt.style.display = "none";
+    }
 
     drawMap();
     d3.select('svg')
-        .call(zoom);
+        .call(zoomf);
   });
