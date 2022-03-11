@@ -24,7 +24,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         d3.json("gz_2010_us_040_00_500k.json").then((data) =>{
             mapdata = data;
-            console.log(data);
+
+            var stateNames = []
+            for(var i = 0; i < data.features.length; i++){
+                if(data.features[i].properties["NAME"] != "Alaska" && data.features[i].properties["NAME"] != "Hawaii" )//Remove to Contiguous 48
+                stateNames.push(data.features[i].properties["NAME"]);
+            }
+            stateNames = stateNames.sort();
+            stateSelectDD = document.getElementById("stateSelector");
+            for(var i = 0; i < stateNames.length; i++)
+            {
+                stateSelectDD.innerHTML += "<li><a class='dropdown-item' href='#' data='National'>" + stateNames[i] + "</a></li>";
+            }
+
             const paths = svg.selectAll("path").data(data.features);
             paths.enter()
                 .append("path")
