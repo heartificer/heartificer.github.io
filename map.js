@@ -22,6 +22,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
             .attr("width", width)
             .append("g");
 
+        var mdiv = document.getElementById("map");
+        mdiv.style.width = width + "px";
+        mdiv.style.height = height + "px";
+
         d3.json("gz_2010_us_040_00_500k.json").then((data) =>{
             mapdata = data;
 

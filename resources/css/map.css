@@ -33,6 +33,16 @@ svg{
     fill: yellow;
 }
 
+#map
+{
+    display: inline;
+}
+
+#chart
+{
+    display: inline;
+}
+
 #map svg
 {
     fill: red;
