@@ -45,6 +45,8 @@ svg{
     border: 1px solid black;
     margin: auto;
     vertical-align: top;
+    word-wrap:break-word;
+    max-width: 450px;
 }
 
 #map svg
