@@ -7,6 +7,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const projection = d3.geoMercator();
     const pathgen = d3.geoPath().projection(projection);
 
+    // add on-click
+    d3.select("#map").on("click", (e) => {
+        let isOcean = e.path[0].tagName == 'svg';
+        if (isOcean) {
+            // insert un-zoom code
+        }
+     });
+
     var drawMap = function(){
         var svg = d3.select("#map")
             .append("svg")
@@ -22,6 +30,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 .append("path")
                 .attr("class", n=>n.properties.NAME.replace(/\s/g, n.properties.NAME) + " state")
                 .attr("d",d => pathgen(d))
+
+                // state border coloring
+                .attr("fill", "black")
+                .attr("stroke-width", "0.0625")
+                .attr("stroke", "black")
+
                 .on("mousemove", function(e, d) {
                     d3.select(this).style("fill", "yellow")
                         .attr('fill-opacity', 0.3);
@@ -31,7 +45,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 d3.select(this).style("fill", "grey")
                     .attr('fill-opacity', 1);
                     tooltip_sleep();
-                });
+                })
+                .on("click", null);
+                //.on("click", () => { alert('clementine') });
             zoomFit(0, 0);
         });
     };
