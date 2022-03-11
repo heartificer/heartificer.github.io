@@ -35,12 +35,16 @@ svg{
 
 #map
 {
-    display: inline;
+    display: inline-block;
 }
 
 #chart
 {
-    display: inline;
+    position:sticky;
+    display:inline-block;
+    border: 1px solid black;
+    margin: auto;
+    vertical-align: top;
 }
 
 #map svg
