@@ -22,28 +22,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             .attr("width", width)
             .append("g");
 
-        var mdiv = document.getElementById("map");
-        mdiv.style.width = width + "px";
-        mdiv.style.height = height + "px";
-
-        var cdiv = document.getElementById("chart");
-        cdiv.style.height = height + "px";
-
         d3.json("gz_2010_us_040_00_500k.json").then((data) =>{
             mapdata = data;
-
-            var stateNames = []
-            for(var i = 0; i < data.features.length; i++){
-                if(data.features[i].properties["NAME"] != "Alaska" && data.features[i].properties["NAME"] != "Hawaii" )//Remove to Contiguous 48
-                stateNames.push(data.features[i].properties["NAME"]);
-            }
-            stateNames = stateNames.sort();
-            stateSelectDD = document.getElementById("stateSelector");
-            for(var i = 0; i < stateNames.length; i++)
-            {
-                stateSelectDD.innerHTML += "<li><a class='dropdown-item' href='#' data='National'>" + stateNames[i] + "</a></li>";
-            }
-
+            console.log(data);
             const paths = svg.selectAll("path").data(data.features);
             paths.enter()
                 .append("path")
@@ -69,7 +50,62 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 //.on("click", () => { alert('clementine') });
             zoomFit(0, 0);
         });
+/*
+        d3.csv('resources/data/usretechnicalpotential_national.csv').then(data => {
+            energydata = data
+            console.log(data)
+            const paths = svg.selectAll("path").data(data);
+            paths.enter()
+
+                .on("click", function(d) {
+                    
+                })
+                
+                
+        })*/
     };
+
+    var drawBar = function(){
+        var margin = {top: 20, right: 20, bottom: 80, left: 40},
+        width = 300 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+        var svg = d3.select("#chart")
+                    .append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                        .attr("transform",
+                            "translate(" + margin.left + "," + margin.top + ")");
+        
+        // get the data
+        d3.csv("resources/data/usretechnicalpotential_national.csv", function(data) {
+
+            // X axis
+            var x = d3.scaleBand()
+                .range([ 0, width ])
+                //.domain(data.map(function(d) { return d.State; }))
+                .domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
+                        "all_Hydrothermal", "all_Geothermal", "all_hydropower"])
+                .padding(0.2);
+            svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end");
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+            //.domain([0, d3.max(data, d => Number(d.all_PV))])
+            .domain([0, 15000])
+            .range([ height, 0]);
+            svg.append("g")
+            .call(d3.axisLeft(y));
+        })
+
+    }
+
 
     function handleZoom(e) {
         d3.select('svg g')
@@ -113,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     drawMap();
+    drawBar();
     d3.select('svg')
         .call(zoomf);
   });
