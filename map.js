@@ -65,8 +65,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })*/
     };
 
-    var drawBar = function(){
-        var margin = {top: 20, right: 20, bottom: 80, left: 40},
+    var drawBar = async function(){
+        var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 300 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -79,12 +79,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
                             "translate(" + margin.left + "," + margin.top + ")");
         
         // get the data
-        d3.csv("resources/data/usretechnicalpotential_national.csv", function(data) {
+        let data = []
+	    await d3.csv('resources/data/usretechnicalpotential_column_aggs.csv').then(d => {
+            data = d
 
             // X axis
             var x = d3.scaleBand()
                 .range([ 0, width ])
-                //.domain(data.map(function(d) { return d.State; }))
+                //.domain(data.map(function(d) { return d.Region; }))
                 .domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
                         "all_Hydrothermal", "all_Geothermal", "all_hydropower"])
                 .padding(0.2);
@@ -97,11 +99,26 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
             // Add Y axis
             var y = d3.scaleLinear()
-            //.domain([0, d3.max(data, d => Number(d.all_PV))])
-            .domain([0, 15000])
+            .domain([0, d3.max(data, d => Number(d.all_PV))])
+            //.domain([0, 160000])
             .range([ height, 0]);
             svg.append("g")
             .call(d3.axisLeft(y));
+
+            /* Bars
+            svg.selectAll("mybar")
+            .data(data.)
+            .enter()
+            .append("rect")
+                .attr("x", function(d) { return x(d.Region); })
+                .attr("y", function(d) { return y(d.all_PV); })
+                .attr("width", x.bandwidth())
+                .attr("height", function(d) { return height - y(d.all_PV); })
+                .attr("fill", "#69b3a2")
+                */
+            
+            console.log(data.Region == "National")
+            //console.log(data, d=>d.all_PV);
         })
 
     }
