@@ -87,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             var x = d3.scaleBand()
                 .range([ 0, width ])
                 .domain(data.map(function(d) { return d.Region; }))
+                //.domain(data.map(function(d) { return data.columns; }))
                 //.domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
                         //"all_Hydrothermal", "all_Geothermal", "all_hydropower"])
                 .padding(0.2);
@@ -111,16 +112,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
             .enter()
             .append("rect")
                 .attr("x", function(d) { return x(d.Region); })
-                //.attr("x", ["all_PV", "all_Wind", "all_CSP", "all_biopower",
-                        //"all_Hydrothermal", "all_Geothermal", "all_hydropower"])
-                .attr("y", function(d) { return y(d.all_PV); })
-                //.attr("y", [d.all_PV, d.all_Wind, d.all_CSP, d.all_biopower,
-                           // d.all_Hydrothermal, d.all_Geothermal, d.all_hyfropower])
                 .attr("width", x.bandwidth())
                 .attr("height", function(d) { return height - y(d.all_PV); })
                 .attr("fill", "yellow")
                 .attr('fill-opacity', 0.7)
+                .attr("height", function(d) { return height - y(0); }) // always equal to 0
+                .attr("y", function(d) { return y(0); })
             ;
+
+            // Animation
+            svg.selectAll("rect")
+            .transition()
+            .duration(1000)
+            .attr("y", function(d) { return y(d.all_PV); })
+            .attr("height", function(d) { return height - y(d.all_PV); })
+            .delay(function(d,i){console.log(i) ; return(i*100)})
                 
             
             console.log(data.Region == "National")
