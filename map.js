@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     var drawBar = async function(){
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
-        width = 300 - margin.left - margin.right,
+        width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
         var svg = d3.select("#chart")
@@ -81,14 +81,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // get the data
         let data = []
 	    await d3.csv('resources/data/usretechnicalpotential_column_aggs.csv').then(d => {
-            data = d
+            data = d // just get the last row
 
             // X axis
             var x = d3.scaleBand()
                 .range([ 0, width ])
-                //.domain(data.map(function(d) { return d.Region; }))
-                .domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
-                        "all_Hydrothermal", "all_Geothermal", "all_hydropower"])
+                .domain(data.map(function(d) { return d.Region; }))
+                //.domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
+                        //"all_Hydrothermal", "all_Geothermal", "all_hydropower"])
                 .padding(0.2);
             svg.append("g")
             .attr("transform", "translate(0," + height + ")")
@@ -105,17 +105,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
             svg.append("g")
             .call(d3.axisLeft(y));
 
-            /* Bars
+            // Bars
             svg.selectAll("mybar")
-            .data(data.)
+            .data(data)
             .enter()
             .append("rect")
                 .attr("x", function(d) { return x(d.Region); })
+                //.attr("x", ["all_PV", "all_Wind", "all_CSP", "all_biopower",
+                        //"all_Hydrothermal", "all_Geothermal", "all_hydropower"])
                 .attr("y", function(d) { return y(d.all_PV); })
+                //.attr("y", [d.all_PV, d.all_Wind, d.all_CSP, d.all_biopower,
+                           // d.all_Hydrothermal, d.all_Geothermal, d.all_hyfropower])
                 .attr("width", x.bandwidth())
                 .attr("height", function(d) { return height - y(d.all_PV); })
-                .attr("fill", "#69b3a2")
-                */
+                .attr("fill", "yellow")
+                .attr('fill-opacity', 0.7)
+            ;
+                
             
             console.log(data.Region == "National")
             //console.log(data, d=>d.all_PV);
