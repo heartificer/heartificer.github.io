@@ -80,16 +80,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
         
         // get the data
         let data = []
-	    await d3.csv('resources/data/usretechnicalpotential_column_aggs.csv').then(d => {
+	    await d3.csv('resources/data/usretechnicalpotential_national_column_aggs.csv').then(d => {
             data = d // just get the last row
 
             // X axis
             var x = d3.scaleBand()
                 .range([ 0, width ])
-                .domain(data.map(function(d) { return d.Region; }))
+                //.domain(data.map(function(d) { return d.Region; }))
                 //.domain(data.map(function(d) { return data.columns; }))
-                //.domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
-                        //"all_Hydrothermal", "all_Geothermal", "all_hydropower"])
+                .domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
+                        "all_Hydrothermal", "all_Geothermal", "all_hydropower"])
                 .padding(0.2);
             svg.append("g")
             .attr("transform", "translate(0," + height + ")")
@@ -111,9 +111,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             .data(data)
             .enter()
             .append("rect")
-                .attr("x", function(d) { return x(d.Region); })
+                //.attr("x", function(d) { return x(d.Region); })
                 .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(d.all_PV); })
+                .attr("height", function(d) { return height - y(d.value); })
                 .attr("fill", "yellow")
                 .attr('fill-opacity', 0.7)
                 .attr("height", function(d) { return height - y(0); }) // always equal to 0
