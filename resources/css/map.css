@@ -36,6 +36,8 @@ svg{
 #map
 {
     display: inline-block;
+    position: relative;
+    margin-top: 25px; /* nudged this map down so it aligns with the bar chart*/
 }
 
 #chart
@@ -46,7 +48,8 @@ svg{
     margin: auto;
     vertical-align: top;
     word-wrap:break-word;
-    max-width: 450px;
+    max-width: 600px;
+    min-width: 600px; /* make this the same width as the bar chart so improved presentation */
 }
 
 #map svg
