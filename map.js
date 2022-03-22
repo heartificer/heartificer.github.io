@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(event) { 
+document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
 
     var mapdata;
     var width = 650;
@@ -122,11 +122,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
             // Animation
             svg.selectAll("rect")
-            .transition()
-            .duration(1000)
-            .attr("y", function(d) { return y(d.all_PV); })
-            .attr("height", function(d) { return height - y(d.all_PV); })
-            .delay(function(d,i){console.log(i) ; return(i*100)})
+                .transition()
+                .duration(1000)
+                .attr("y", function(d) { return y(d.all_PV); })
+                .attr("height", function(d) { return height - y(d.all_PV); })
+                .delay(function(d,i){console.log(i) ; return(i*100)})
                 
             
             console.log(data.Region == "National")
@@ -134,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         })
 
     }
-
 
     function handleZoom(e) {
         d3.select('svg g')
@@ -158,7 +157,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
     }
 
-
     let zoomf = d3.zoom().on('zoom', handleZoom);
 
     function tooltip_wake(e, d)
@@ -177,8 +175,40 @@ document.addEventListener("DOMContentLoaded", function(event) {
         tt.style.display = "none";
     }
 
+    function getMeatspacePosition() {
+        const statusDetails = document.querySelector("#statusDetails");
+        const locationDetails = document.querySelector("#locationDetails");
+        locationDetails.href = '';
+        locationDetails.textContent = '';
+        if (!navigator.geolocation) {
+            statusDetails.textContent = 'Geolocation is not supported by your browser';
+        } else {
+            statusDetails.textContent = 'Locating …';
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // success method
+                    const latitude  = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    statusDetails.textContent = '';
+                    locationDetails.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+                    locationDetails.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+                },
+                () => {
+                    // error / failure method
+                    statusDetails.textContent = 'Unable to retrieve your location';
+                }
+            );
+        }
+    }
+
+    if (getMeatspacePosition && document.querySelector("#fetchLocation")){
+        document.querySelector("#fetchLocation").addEventListener('click', getMeatspacePosition);
+    }
+
     drawMap();
     drawBar();
     d3.select('svg')
         .call(zoomf);
-  });
+
+  } /* cease "DOMContentLoaded" event */
+  );   
