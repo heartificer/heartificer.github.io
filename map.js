@@ -46,8 +46,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .attr('fill-opacity', 1);
                     tooltip_sleep();
                 })
-                .on("click", null);
-                //.on("click", () => { alert('clementine') });
+                .on("click", function(d) {
+                    removeBar()
+                    var region = get_region(d)
+                    //console.log(region)
+                    drawBar(region)
+                })
             zoomFit(0, 0);
         });
 /*
@@ -65,7 +69,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         })*/
     };
 
-    var drawBar = async function(){
+    var removeBar = function(){
+        var svg = d3.select("#chart")
+        svg.selectAll('*').remove();
+    }
+
+    var drawBar = async function(region){
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
@@ -84,10 +93,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 	    await d3.csv('resources/data/usretechnicalpotential_column_aggs.csv', d3.autoType)
         .then(d => {
             data = d
-            console.log(data);
+            //console.log(data);
             
             var needed = data.columns.slice(-7);
-            var data_filt = data.filter(function(dd){return dd.Region=="National"});
+            var data_filt = data.filter(function(dd){return dd.Region==region});
+            console.log(data_filt)
             // get multiple key values
             const subset = (({ all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}) => 
                 ({  all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}))(data_filt[0]);
@@ -156,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .duration(800)
             .attr("y", function(d) { return y(d.value); })
             .attr("height", function(d) { return height - y(d.value); })
-            .delay(function(d,i){console.log(i) ; return(i*100)})
+            .delay(function(d,i){return(i*100)})
 
         })
 
@@ -185,6 +195,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     let zoomf = d3.zoom().on('zoom', handleZoom);
+
+    function get_region(d) {
+        nametext = document.getElementById("tooltip_name");
+        return nametext.innerHTML
+    }
 
     function tooltip_wake(e, d)
     {
@@ -233,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     drawMap();
-    drawBar();
+    drawBar("National");
     d3.select('svg')
         .call(zoomf);
 
