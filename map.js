@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         height = 400 - margin.top - margin.bottom;
 
         // add chart to the barchart div
-        var svg = d3.select("#barchart")
+        var svg = d3.select("#chart")
                     .append("svg")
                         .attr("width", width + margin.left + margin.right)
                         .attr("height", height + margin.top + margin.bottom)
@@ -97,26 +97,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     value: value
             }));
             
-            /*
-            console.log(subset); 
-            console.log(data_array); 
-            console.log(d3.max(Object.values(subset)))
-            
-            console.log(data_filt);
-            // gets just the values as an array
-            console.log(Object.values(data_filt[0]));
-            gets just the value associated with the all_PV key
-            console.log(data_filt[0]["all_PV"]);
-            console.log(data_filt[0].all_PV);
-            console.log(data_filt.keys())
-            */
-
-            
-            /*const iterator = data_filt.values();
-
-            for (const value of iterator) {
-            console.log(value);
-            }*/
 
             // X axis
             var x = d3.scaleBand()
@@ -151,29 +131,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 .attr("width", x.bandwidth())
                 .attr("height", function(d) { return height - y(d.value); })
                 .attr("fill", "yellow")
-            /*.append("rect")
-                //.attr("x", function(d) { return x(d.Region); })
-                .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(Object.values(subset)); })
-                .attr("fill", "yellow")
-                .attr('fill-opacity', 0.7)
-                .attr("height", function(d) { return height - y(0); }) // always equal to 0
-                .attr("y", function(d) { return y(0); })
-                */
             ;
 
-            /* Animation
-            svg.selectAll("rect")
-                .transition()
-                .duration(1000)
-                .attr("y", function(d) { return y(subset); })
-                .attr("height", function(d) { return height - y(subset); })
-                .delay(function(d,i){console.log(i) ; return(i*100)})
-                */
-                
-            
-            console.log(data.Region == "National")
-            //console.log(data, d=>d.all_PV);
         })
 
     }
