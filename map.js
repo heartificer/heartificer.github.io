@@ -70,7 +70,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
-        var svg = d3.select("#chart")
+        // add chart to the barchart div
+        var svg = d3.select("#barchart")
                     .append("svg")
                         .attr("width", width + margin.left + margin.right)
                         .attr("height", height + margin.top + margin.bottom)
@@ -80,16 +81,50 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         
         // get the data
         let data = []
-	    await d3.csv('resources/data/usretechnicalpotential_national_column_aggs.csv').then(d => {
-            data = d // just get the last row
+	    await d3.csv('resources/data/usretechnicalpotential_column_aggs.csv', d3.autoType)
+        .then(d => {
+            data = d
+            console.log(data);
+            
+            var needed = data.columns.slice(-7);
+            var data_filt = data.filter(function(dd){return dd.Region=="National"});
+            // get multiple key values
+            const subset = (({ all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}) => 
+                ({  all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}))(data_filt[0]);
+            // transforms object into array
+            const data_array = Object.entries(subset).map(([key, value]) => ({
+                    key: key,
+                    value: value
+            }));
+            
+            /*
+            console.log(subset); 
+            console.log(data_array); 
+            console.log(d3.max(Object.values(subset)))
+            
+            console.log(data_filt);
+            // gets just the values as an array
+            console.log(Object.values(data_filt[0]));
+            gets just the value associated with the all_PV key
+            console.log(data_filt[0]["all_PV"]);
+            console.log(data_filt[0].all_PV);
+            console.log(data_filt.keys())
+            */
+
+            
+            /*const iterator = data_filt.values();
+
+            for (const value of iterator) {
+            console.log(value);
+            }*/
 
             // X axis
             var x = d3.scaleBand()
                 .range([ 0, width ])
+                .domain(data_array.map(function(d) { return d.key; }))
                 //.domain(data.map(function(d) { return d.Region; }))
-                //.domain(data.map(function(d) { return data.columns; }))
-                .domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
-                        "all_Hydrothermal", "all_Geothermal", "all_hydropower"])
+                //.domain(data_filt.map(function(d) { return d[0]; }))
+                //.domain(needed) // gets only the columns starting with 'all'
                 .padding(0.2);
             svg.append("g")
             .attr("transform", "translate(0," + height + ")")
@@ -100,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
             // Add Y axis
             var y = d3.scaleLinear()
-            .domain([0, d3.max(data, d => Number(d.all_PV))])
+            .domain([0, d3.max(Object.values(subset))])
             //.domain([0, 160000])
             .range([ height, 0]);
             svg.append("g")
@@ -108,25 +143,33 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
             // Bars
             svg.selectAll("mybar")
-            .data(data)
+            .data(data_array)
             .enter()
             .append("rect")
-                //.attr("x", function(d) { return x(d.Region); })
+                .attr("x", function(d) { return x(d.key); } )
+                .attr("y", function(d) { return y(d.value); } )
                 .attr("width", x.bandwidth())
                 .attr("height", function(d) { return height - y(d.value); })
+                .attr("fill", "yellow")
+            /*.append("rect")
+                //.attr("x", function(d) { return x(d.Region); })
+                .attr("width", x.bandwidth())
+                .attr("height", function(d) { return height - y(Object.values(subset)); })
                 .attr("fill", "yellow")
                 .attr('fill-opacity', 0.7)
                 .attr("height", function(d) { return height - y(0); }) // always equal to 0
                 .attr("y", function(d) { return y(0); })
+                */
             ;
 
-            // Animation
+            /* Animation
             svg.selectAll("rect")
                 .transition()
                 .duration(1000)
-                .attr("y", function(d) { return y(d.all_PV); })
-                .attr("height", function(d) { return height - y(d.all_PV); })
+                .attr("y", function(d) { return y(subset); })
+                .attr("height", function(d) { return height - y(subset); })
                 .delay(function(d,i){console.log(i) ; return(i*100)})
+                */
                 
             
             console.log(data.Region == "National")
