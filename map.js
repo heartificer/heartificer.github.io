@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         var svg = d3.select("#chart")
                     .append("svg")
                         .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
+                        .attr("height", height + margin.top + margin.bottom + 5)
                     .append("g")
                         .attr("transform",
                             "translate(" + margin.left + "," + margin.top + ")");
@@ -113,6 +113,13 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .attr("transform", "translate(-10,0)rotate(-45)")
             .style("text-anchor", "end");
 
+            // text label for the x axis
+            svg.append("text")      
+            .attr("x", width / 2 )
+            .attr("y",  height + margin.bottom)
+            .style("text-anchor", "middle")
+            .text("Energy Type");
+
             // Add Y axis
             var y = d3.scaleLinear()
             .domain([0, d3.max(Object.values(subset))])
@@ -120,6 +127,17 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .range([ height, 0]);
             svg.append("g")
             .call(d3.axisLeft(y));
+
+            // text label for y axis
+            svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x",0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Potential Generation Capacity (GW)");
+
+            
 
             // Bars
             svg.selectAll("mybar")
