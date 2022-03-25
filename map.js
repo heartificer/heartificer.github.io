@@ -127,11 +127,18 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .enter()
             .append("rect")
                 .attr("x", function(d) { return x(d.key); } )
-                .attr("y", function(d) { return y(d.value); } )
+                .attr("y", function(d) { return y(0); } )
                 .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(d.value); })
+                .attr("height", function(d) { return height - y(0); })
                 .attr("fill", "yellow")
             ;
+            // Animation
+            svg.selectAll("rect")
+            .transition()
+            .duration(800)
+            .attr("y", function(d) { return y(d.value); })
+            .attr("height", function(d) { return height - y(d.value); })
+            .delay(function(d,i){console.log(i) ; return(i*100)})
 
         })
 
