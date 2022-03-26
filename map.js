@@ -1,8 +1,10 @@
+var width = 1000;
+var height = 500;
+var selectedState = "";
+
 document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
 
     var mapdata;
-    var width = 650;
-    var height = 400;
 
     const pathref = d3.geoPath();
     const projection = d3.geoMercator();
@@ -12,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     d3.select("#map").on("click", (e) => {
         let isOcean = e.path[0].tagName == 'svg';
         if (isOcean) {
-            // insert un-zoom code
+            zoomNational();
         }
      });
 
@@ -55,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 .attr("fill", "black")
                 .attr("stroke-width", "0.0625")
                 .attr("stroke", "black")
-                
                 .on("mousemove", function(e, d) {
                     d3.select(this).style("fill", "yellow")
                         .attr('fill-opacity', 0.3);
@@ -68,20 +69,36 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 })
                 .on("click", function(event, d) {
                     g = d3.select('svg g');
-                    d.clicked = !d.clicked;
+                    var thisState = d.properties.NAME;
+
+                    var zoomOut = selectedState == thisState;
+                    
+                    selectedState = thisState;
+                    
                     const bounds = this.getBBox();
                     const x0 = bounds.x;
                     const x1 = bounds.x + bounds.width;
                     const y0 = bounds.y;
                     const y1 = bounds.y + bounds.height;
-                    g.transition().duration(1000).attr("transform", d.clicked ? "translate(" + (width / 2) + "," + (height / 2) + ") scale(" + (1 / Math.max((x1 - x0) / width, (y1 - y0) / height)) + ") translate(" + (-(x0 + x1) / 2) + "," + (-(y0 + y1) / 2) + ")" : "transform(0,0) scale(1)");
+
+                    if(!zoomOut)
+                    {
+                        var t = "translate(" + (width / 2) + "," + (height / 2) + ") scale(" + (1 / Math.max((x1 - x0) / width, (y1 - y0) / height)) + ") translate(" + (-(x0 + x1) / 2) + "," + (-(y0 + y1) / 2) + ")";
+                    }
+                    else
+                    {
+                        var t = "translate(-600,-450) scale(5)";
+                        selectedState = "";
+                    }
+
+                    g.transition().duration(1000).attr("transform", t);
 
                     removeBar()
                     var region = get_region(d)
                     //console.log(region)
                     drawBar(region)
                 })
-            zoomFit(0, 0);
+            zoomNational();
         });
 /*
         d3.csv('resources/data/usretechnicalpotential_national.csv').then(data => {
@@ -97,11 +114,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 
         })*/
     };
-
-    function clickState(e)
-    {
-        console.log("TEST");
-    }
 
     var removeBar = function(){
         var svg = d3.select("#chart")
@@ -206,28 +218,26 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
     }
 
-    function handleZoom(e) {
-        d3.select('svg g')
-        .attr('transform', e.transform);
-    }
-    
-    function zoomFit(paddingPercent, transitionDuration) 
-    {
-        svg = d3.select("svg");
-        g = d3.select("svg g");
-        bb = g.node().getBBox();
-        widthv = bb.width;
-        heightv = bb.height;
-        console.log(g.node().getBBox());
-        if (widthv && heightv){
-            //TODO: This is janky. Need a more robust method. -AMH (It's also my fault)
-            scale = 4;
-            zoomf.scaleTo(svg, scale);
-            zoomf.translateTo(svg, widthv * 1.45, heightv * 1.65);
-        }
-    }
 
-    let zoomf = d3.zoom().on('zoom', handleZoom);
+
+    
+    // function zoomFit(paddingPercent, transitionDuration) 
+    // {
+    //     svg = d3.select("svg");
+    //     g = d3.select("svg g");
+    //     bb = g.node().getBBox();
+    //     widthv = bb.width;
+    //     heightv = bb.height;
+    //     console.log(g.node().getBBox());
+    //     if (widthv && heightv){
+    //         //TODO: This is janky. Need a more robust method. -AMH (It's also my fault)
+    //         scale = 4;
+    //         zoomf.scaleTo(svg, scale);
+    //         zoomf.translateTo(svg, widthv * 1.45, heightv * 1.65);
+    //     }
+    // }
+
+    // let zoomf = d3.zoom().on('zoom', handleZoom);
 
     function get_region(d) {
         nametext = document.getElementById("tooltip_name");
@@ -282,17 +292,50 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
     drawMap();
     drawBar("National");
-    d3.select('svg')
-        .call(zoomf);
-   
+    
+    //Zoom Setup
+    let zoomf = d3.zoom().on('zoom', handleZoom);
+    
+    function handleZoom(e) {
+            d3.select('svg g')
+            .attr('transform', e.transform);
+            console.log(e.transform);
+    }
+    
+    function zoomTo(x,y,k){
+        var ctx = d3.zoomIdentity.translate(x, y).scale(k);
+        d3.select('svg g').call(zoomf.transform, ctx);
+    }
+
+    function zoomNational(){
+        zoomTo(-600, -450, 5);
+        selectedState = "";
+    }
+
+
   } /* cease "DOMContentLoaded" event */
 );   
 
 var saver;
 
+function zoomToState(s){
+    st = d3.select("#state_" + s);
+    const bounds = st.node().getBBox();
+    const x0 = bounds.x;
+    const x1 = bounds.x + bounds.width;
+    const y0 = bounds.y;
+    const y1 = bounds.y + bounds.height;
+
+    var t = "translate(" + (width / 2) + "," + (height / 2) + ") scale(" + (1 / Math.max((x1 - x0) / width, (y1 - y0) / height)) + ") translate(" + (-(x0 + x1) / 2) + "," + (-(y0 + y1) / 2) + ")";
+    var g = d3.select("svg g");
+    g.transition().duration(1000).attr("transform", t);
+}
+
 function ddClick(e)
 {
     state = e.target.attributes.data.value;
     console.log(state + " dropdown clicked!");
+    selectedState = state;
+    zoomToState(state);
     return false;
 }
