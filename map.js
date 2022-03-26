@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     var width = 650;
     var height = 400;
 
+    const pathref = d3.geoPath();
     const projection = d3.geoMercator();
     const pathgen = d3.geoPath().projection(projection);
 
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         }
      });
 
+
     var drawMap = function(){
         var svg = d3.select("#map")
             .append("svg")
@@ -22,32 +24,59 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .attr("width", width)
             .append("g");
 
-        d3.json("gz_2010_us_040_00_500k.json").then((data) =>{
+        d3.json("resources/data/gz_2010_us_040_00_500k.json").then((data) =>{
             mapdata = data;
-            console.log(data);
+            var stateNames = []
+            for(var i = 0; i < data.features.length; i++){
+                if(data.features[i].properties["NAME"] != "Alaska" && data.features[i].properties["NAME"] != "Hawaii" )//Remove to Contiguous 48
+                stateNames.push(data.features[i].properties["NAME"]);
+            }
+            stateNames = stateNames.sort();
+            stateSelectDD = document.getElementById("stateSelector");
+            for(var i = 0; i < stateNames.length; i++)
+            {
+                var ddid = "dropdown_" + stateNames[i].replace(/\s/g, '');
+                stateSelectDD.innerHTML += "<li><a id='" + ddid + "' class='dropdown-item' href='#' data='" + stateNames[i].replace(/\s/g, '') + "'>" + stateNames[i] + "</a></li>";
+                var delem = document.getElementById(ddid);
+            }
+            var dds = document.getElementsByClassName('dropdown-item');
+            for(i = 0; i < dds.length; i++)
+            {
+                dds[i].addEventListener('click', (e) => ddClick(e));
+            }
             const paths = svg.selectAll("path").data(data.features);
             paths.enter()
                 .append("path")
-                .attr("class", n=>n.properties.NAME.replace(/\s/g, n.properties.NAME) + " state")
+                .attr("id", n=>"state_" + n.properties.NAME.replace(/\s/g, ''))
+                .attr("class", n=>n.properties.NAME.replace(/\s/g, '') + " state")
                 .attr("d",d => pathgen(d))
 
                 // state border coloring
                 .attr("fill", "black")
                 .attr("stroke-width", "0.0625")
                 .attr("stroke", "black")
-
+                
                 .on("mousemove", function(e, d) {
                     d3.select(this).style("fill", "yellow")
                         .attr('fill-opacity', 0.3);
-                    tooltip_wake(e, d);
+                        tooltip_wake(e, d);
                   })
                 .on("mouseleave", function(d) {
-                d3.select(this).style("fill", "grey")
-                    .attr('fill-opacity', 1);
-                    tooltip_sleep();
+                    d3.select(this).style("fill", "grey")
+                        .attr('fill-opacity', 1);
+                        tooltip_sleep();
                 })
-                .on("click", null);
-                //.on("click", () => { alert('clementine') });
+                .on("click", function(event, d) {
+                    g = d3.select('svg g');
+                    d.clicked = !d.clicked;
+                    const bounds = this.getBBox();
+                    const x0 = bounds.x;
+                    const x1 = bounds.x + bounds.width;
+                    const y0 = bounds.y;
+                    const y1 = bounds.y + bounds.height;
+                    g.transition().duration(1000).attr("transform", d.clicked ? "translate(" + (width / 2) + "," + (height / 2) + ") scale(" + (1 / Math.max((x1 - x0) / width, (y1 - y0) / height)) + ") translate(" + (-(x0 + x1) / 2) + "," + (-(y0 + y1) / 2) + ")" : "transform(0,0) scale(1)");
+                });
+
             zoomFit(0, 0);
         });
 /*
@@ -64,6 +93,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 
         })*/
     };
+
+    function clickState(e)
+    {
+        console.log("TEST");
+    }
 
     var drawBar = async function(){
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
@@ -138,7 +172,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     function handleZoom(e) {
         d3.select('svg g')
         .attr('transform', e.transform);
-        console.log(e.transform);
     }
     
     function zoomFit(paddingPercent, transitionDuration) 
@@ -209,6 +242,15 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     drawBar();
     d3.select('svg')
         .call(zoomf);
-
+   
   } /* cease "DOMContentLoaded" event */
-  );   
+);   
+
+var saver;
+
+function ddClick(e)
+{
+    state = e.target.attributes.data.value;
+    console.log(state + " dropdown clicked!");
+    return false;
+}
