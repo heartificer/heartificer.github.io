@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     var drawBar = async function(region){
-        var margin = {top: 20, right: 20, bottom: 80, left: 60},
+        var margin = {top: 20, right: 20, bottom: 85, left: 75},
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
