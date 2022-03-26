@@ -46,8 +46,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .attr('fill-opacity', 1);
                     tooltip_sleep();
                 })
-                .on("click", null);
-                //.on("click", () => { alert('clementine') });
+                .on("click", function(d) {
+                    removeBar()
+                    var region = get_region(d)
+                    //console.log(region)
+                    drawBar(region)
+                })
             zoomFit(0, 0);
         });
 /*
@@ -65,31 +69,52 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         })*/
     };
 
-    var drawBar = async function(){
+    var removeBar = function(){
+        var svg = d3.select("#chart")
+        svg.selectAll('*').remove();
+    }
+
+    var drawBar = async function(region){
         var margin = {top: 20, right: 20, bottom: 80, left: 60},
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
+        // add chart to the barchart div
         var svg = d3.select("#chart")
                     .append("svg")
                         .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
+                        .attr("height", height + margin.top + margin.bottom + 5)
                     .append("g")
                         .attr("transform",
                             "translate(" + margin.left + "," + margin.top + ")");
         
         // get the data
         let data = []
-	    await d3.csv('resources/data/usretechnicalpotential_national_column_aggs.csv').then(d => {
-            data = d // just get the last row
+	    await d3.csv('resources/data/usretechnicalpotential_column_aggs.csv', d3.autoType)
+        .then(d => {
+            data = d
+            //console.log(data);
+            
+            var needed = data.columns.slice(-7);
+            var data_filt = data.filter(function(dd){return dd.Region==region});
+            console.log(data_filt)
+            // get multiple key values
+            const subset = (({ all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}) => 
+                ({  all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}))(data_filt[0]);
+            // transforms object into array
+            const data_array = Object.entries(subset).map(([key, value]) => ({
+                    key: key,
+                    value: value
+            }));
+            
 
             // X axis
             var x = d3.scaleBand()
                 .range([ 0, width ])
+                .domain(data_array.map(function(d) { return d.key; }))
                 //.domain(data.map(function(d) { return d.Region; }))
-                //.domain(data.map(function(d) { return data.columns; }))
-                .domain(["all_PV", "all_Wind", "all_CSP", "all_biopower",
-                        "all_Hydrothermal", "all_Geothermal", "all_hydropower"])
+                //.domain(data_filt.map(function(d) { return d[0]; }))
+                //.domain(needed) // gets only the columns starting with 'all'
                 .padding(0.2);
             svg.append("g")
             .attr("transform", "translate(0," + height + ")")
@@ -98,39 +123,51 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .attr("transform", "translate(-10,0)rotate(-45)")
             .style("text-anchor", "end");
 
+            // text label for the x axis
+            svg.append("text")      
+            .attr("x", width / 2 )
+            .attr("y",  height + margin.bottom)
+            .style("text-anchor", "middle")
+            .text("Energy Type");
+
             // Add Y axis
             var y = d3.scaleLinear()
-            .domain([0, d3.max(data, d => Number(d.all_PV))])
+            .domain([0, d3.max(Object.values(subset))])
             //.domain([0, 160000])
             .range([ height, 0]);
             svg.append("g")
             .call(d3.axisLeft(y));
 
+            // text label for y axis
+            svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x",0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Potential Generation Capacity (GW)");
+
+            
+
             // Bars
             svg.selectAll("mybar")
-            .data(data)
+            .data(data_array)
             .enter()
             .append("rect")
-                //.attr("x", function(d) { return x(d.Region); })
+                .attr("x", function(d) { return x(d.key); } )
+                .attr("y", function(d) { return y(0); } )
                 .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(d.value); })
+                .attr("height", function(d) { return height - y(0); })
                 .attr("fill", "yellow")
-                .attr('fill-opacity', 0.7)
-                .attr("height", function(d) { return height - y(0); }) // always equal to 0
-                .attr("y", function(d) { return y(0); })
             ;
-
             // Animation
             svg.selectAll("rect")
-                .transition()
-                .duration(1000)
-                .attr("y", function(d) { return y(d.all_PV); })
-                .attr("height", function(d) { return height - y(d.all_PV); })
-                .delay(function(d,i){console.log(i) ; return(i*100)})
-                
-            
-            console.log(data.Region == "National")
-            //console.log(data, d=>d.all_PV);
+            .transition()
+            .duration(800)
+            .attr("y", function(d) { return y(d.value); })
+            .attr("height", function(d) { return height - y(d.value); })
+            .delay(function(d,i){return(i*100)})
+
         })
 
     }
@@ -158,6 +195,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     let zoomf = d3.zoom().on('zoom', handleZoom);
+
+    function get_region(d) {
+        nametext = document.getElementById("tooltip_name");
+        return nametext.innerHTML
+    }
 
     function tooltip_wake(e, d)
     {
@@ -206,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     drawMap();
-    drawBar();
+    drawBar("National");
     d3.select('svg')
         .call(zoomf);
 
