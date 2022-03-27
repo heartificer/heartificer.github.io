@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         template: `
             <div class="container">
                 <div v-for="(weeklyHistory, idx1) in weeklyHistories" :key="idx1">
-                    <hr v-if="idx==0" />
+                    <hr v-if="idx1==0" />
                     <div class="row">
                         <div class="col">
                             <em>{{ weeklyHistory.when }}</em>
