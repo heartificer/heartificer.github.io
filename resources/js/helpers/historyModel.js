@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         template: `
             <div class="container">
                 <div v-for="(weeklyHistory, idx1) in weeklyHistories" :key="idx1">
+                    <hr v-if="idx==0" />
                     <div class="row">
                         <div class="col">
                             <em>{{ weeklyHistory.when }}</em>
@@ -34,9 +35,9 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     {
                         when: 'March Week 04',
                         actions: [
-                            { who: 'Sarah', what: 'enhanced the bar chart \r [data + axis labeling]'},
-                            { who: 'Aaron', what: 'bootstrap [borders \r general presentation]'},
-                            { who: 'Jason', what: 'geolocation (initial) \r vis history'},
+                            { who: 'Sarah', what: 'enhanced the bar chart [data + axis labeling]'},
+                            { who: 'Aaron', what: 'bootstrap [borders + general presentation]'},
+                            { who: 'Jason', what: 'geolocation (initial) + vis history'},
                         ]
                     }
                 ]
