@@ -57,11 +57,16 @@ svg{
 {
     fill: red;
     border:1px solid black;
-} 
-
+}
 
 #stateSelector
 {
     max-height: 400px;
     overflow-y: auto;
+}
+
+#locationDiv
+{
+    display:inline-block;
+    margin: 0 auto;
 }
