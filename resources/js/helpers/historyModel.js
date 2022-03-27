@@ -24,11 +24,19 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             return {
                 weeklyHistories: [
                     {
+                        when: 'March Week 05',
+                        actions: [
+                            { who: 'Sarah', what: 'further worked the bar chart'},
+                            { who: 'Aaron', what: 'geo map refactor'},
+                            { who: 'Jason', what: 'general refactor'},
+                        ]
+                    }
+                    {
                         when: 'March Week 04',
                         actions: [
-                            { who: 'Sarah', what: 'enhanced the bar chart [data + axis labeling]'},
-                            { who: 'Aaron', what: 'bootstrap [borders + general presentation]'},
-                            { who: 'Jason', what: 'geolocation (initial) + vis history'},
+                            { who: 'Sarah', what: 'enhanced the bar chart \r [data + axis labeling]'},
+                            { who: 'Aaron', what: 'bootstrap [borders \r general presentation]'},
+                            { who: 'Jason', what: 'geolocation (initial) \r vis history'},
                         ]
                     }
                 ]
