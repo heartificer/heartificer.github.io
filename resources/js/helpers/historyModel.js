@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                             { who: 'Aaron', what: 'geo map refactor'},
                             { who: 'Jason', what: 'general refactor'},
                         ]
-                    }
+                    },
                     {
                         when: 'March Week 04',
                         actions: [
