@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                         actions: [
                             { who: 'Sarah', what: 'further worked the bar chart'},
                             { who: 'Aaron', what: 'geo map refactor'},
-                            { who: 'Jason', what: 'general refactor'},
+                            { who: 'Jason', what: 'general refactor + fixed bug with DDL (National)'},
                         ]
                     },
                     {
