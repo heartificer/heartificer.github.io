@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         let isOcean = e.path[0].tagName == 'svg';
         if (isOcean) {
             zoomNational();
+            removeBar();
             drawBar("National");
         }
      });
@@ -115,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     drawBar(thisState);
                 })
             zoomNational();
+            removeBar();
             drawBar("National");
         });
 /*
