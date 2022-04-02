@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     var drawBar = async function(region){
-        var margin = {top: 20, right: 20, bottom: 85, left: 75},
+        var margin = {top: 60, right: 20, bottom: 85, left: 75},
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     
@@ -223,6 +223,14 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .append("g")
                         .attr("transform",
                             "translate(" + margin.left + "," + margin.top + ")");
+
+        // add a title to the bar chart
+        svg.append("text")      
+            .attr("x", (width / 2) - 25 ) // - 125
+            .attr("y",  -25)
+            .attr("font-weight", 700)
+            .style("text-anchor", "middle")
+            .text("Potential Generation Capacity (GW)")
         
         // get the data
         let data = []
@@ -241,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             const data_array = Object.entries(subset).map(([key, value]) => ({
                     key: key,
                     value: value
-            }));            
+            }));
     
             // X axis
             var x = d3.scaleBand()
@@ -252,18 +260,13 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 //.domain(needed) // gets only the columns starting with 'all'
                 .padding(0.2);
             svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x))
-            .selectAll("text")
-            .attr("transform", "translate(-10,0)rotate(-45)")
-            .style("text-anchor", "end");
-    
-            // text label for the x axis
-            svg.append("text")      
-            .attr("x", width / 2 )
-            .attr("y",  height + margin.bottom)
-            .style("text-anchor", "middle")
-            .text("Energy Type");
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("transform", "translate(-10,0)rotate(-45)")
+                .style("text-anchor", "end");
+            /*
+            //*/
     
             // Add Y axis
             var y = d3.scaleLinear()
@@ -272,15 +275,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .range([ height, 0]);
             svg.append("g")
             .call(d3.axisLeft(y));
-    
-            // text label for y axis
-            svg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left)
-            .attr("x",0 - (height / 2))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("Potential Generation Capacity (GW)");
     
             // Bars
             svg.selectAll("mybar")
@@ -300,8 +294,59 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .duration(800)
             .attr("y", function(d) { return y(d.value); })
             .attr("height", function(d) { return height - y(d.value); })
-            .delay(function(d,i){return(i*100)})
-    
+            .delay(function(_d,i){return(i*100)})
+
+            // Legend
+            let groups = Object.keys(data_filt[0]).filter(f => f.startsWith("all"));
+            let groupMeta = {
+                "all_PV": {
+                    name: "Photo Voltaic",
+                    color: d3.rgb(172, 190, 8), 
+                },
+                "all_Wind": {
+                    name: "Wind",
+                    color: d3.rgb(119, 192, 1),
+                },
+                "all_CSP": {
+                    name: "Consentrating Solar-Power",
+                    color: d3.rgb(208, 143, 25),
+                },
+                "all_biopower": {
+                    name: "Biopower",
+                    color: d3.rgb(32, 141, 200),
+                },
+                "all_Hydrothermal": {
+                    name: "Hydrothermal",
+                    color: d3.rgb(23, 180, 149),
+                },
+                "all_Geothermal": {
+                    name: "Geothermal",
+                    color: d3.rgb(206, 104, 29),
+                },
+                "all_hydropower": {
+                    name: "Hydropower",
+                    color: d3.rgb(166, 23, 165),
+                },
+                "unnamed01": {
+                    name: "unnamed01",
+                    color: d3.rgb(202, 20, 19),
+                },
+                "unnamed02": {
+                    name: "unnamed02",
+                    color: d3.rgb(91, 117, 142),
+                },
+                "unnamed03": {
+                    name: "unnamed03",
+                    color: d3.rgb(0, 0, 0),
+                }
+            };
+            // gives group friendly names + only includes the ones in the list
+            groups = groups.map(group => {
+                let rename = groupMeta[group];
+                if (rename){
+                    return rename.name;
+                }
+            });
         })
     
     }
