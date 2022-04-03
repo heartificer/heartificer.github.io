@@ -111,6 +111,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
                     g.transition().duration(1000).attr("transform", t);
 
+                    // unhide all 
+                    Object.keys(groupMeta).forEach(key => {
+                        groupMeta[key].hidden = false;
+                    })
+
                     removeBar();
                     if (!zoomOut){
                         drawBar(thisState);
@@ -136,11 +141,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 
         })*/
     };
-
-    
-
-
-
     
     // function zoomFit(paddingPercent, transitionDuration) 
     // {
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         svg.selectAll('*').remove();
     }
 
-    var drawBar = async function(region){
+    var drawBar = async function(region, type){
         var margin = {top: 80, right: 20, bottom: 15, left: 75},
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
@@ -247,14 +247,31 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
             console.log(data_filt)
             // get multiple key values
-            const subset = (({ all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}) => 
+            let subset = (({ all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}) => 
                 ({  all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}))(data_filt[0]);
+
+            // filter out type, if hidden
+            if (type) {
+                let groupMetaKeys = Object.keys(groupMeta).filter(g => groupMeta[g].key == type);
+                if (groupMetaKeys.length == 1) {
+                    let matchingKey = groupMetaKeys[0];
+                    groupMeta[matchingKey].hidden = !groupMeta[matchingKey].hidden;
+
+                    let revisedSubset = {};
+                    Object.keys(groupMeta).filter(gmKey => !groupMeta[gmKey].hidden && !gmKey.startsWith('unnamed')).forEach(key => {
+                        revisedSubset[key] = subset[key];
+                    })
+                    subset = revisedSubset;
+                }
+            }
+
             // transforms object into array
-            const data_array = Object.entries(subset).map(([key, value]) => ({
+            let data_array = Object.entries(subset).map(([key, value]) => ({
                     key: groupMeta[key].key,
                     value: value,
                     color: groupMeta[key].color
             }));
+
             // sort data_array in order of descending values
             data_array.sort((a,b) => {
                 return (a.value >= b.value ? -1 : 1);
@@ -323,13 +340,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .delay(function(_d,i){return(i*100)});
 
             // Values above bars
-            //*
             svg.selectAll("mybarvalues")
             .data(data_array)
             .enter()
             .append("text")
                 .attr("x", function(d, i) {
-                    return x(d.key) + parseInt((6 - d.value.toString().length) * 4.5);
+                    return x(d.key) + (x.bandwidth()/2) - (d.value.toString().length * 4);
                 })
                 .attr("y", function(d, i) {
                     if (y(d.value) > 0.975 * height) {
@@ -341,14 +357,13 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 .attr("fill", "black" )
                 .text(d => d.value)
             ;
-            //*/
 
             // Legend
             let groups = Object.keys(data_filt[0]).filter(f => f.startsWith("all"));
             // gives group friendly names
             groups = groups
                 .map(group => {
-                    let match = { include: false, ...groupMeta[group]};
+                    let match = { include: false, hide: false, ...groupMeta[group]};
                     let data_array_hits = data_array.filter(e => e.key == match.key);
                     if (region == "National"){
                         match.include = true;
@@ -389,11 +404,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                         .attr("height", 23 )
                         .attr("x", width - 213 )
                         .attr("y", (_x,i) => -35 + 26 * i )
-                        .style('fill', x => x.include ? x.color : 'white')
+                        .style('fill', x => x.include && !x.hidden ? x.color : 'white')
                         .attr("stroke", 'black')
                         .attr("stroke-width", '1')
                         .on("click", (_event, d) => {
-                            console.log(`placeholder for filtering data on ${d.key} (bar click)`);
+                            removeBar();
+                            drawBar(region, d.key);
                         })
             ;
             svg.selectAll("mybarlegend")
@@ -402,10 +418,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                         .append("text")
                             .attr("x", width - 205 )
                             .attr("y", (_x,i) => -19 + 26 * i )
-                            .style('fill', 'white')
+                            .style('fill', x => x.hidden ? 'black' : 'white')
                             .text((_x,i) => groups[i].key)
                             .on("click", (_event, d) => {
-                                console.log(`placeholder for filtering data on ${d.key} (text click)`);
+                                removeBar();
+                                drawBar(region, d.key);
                             })
                             ;
             //*/
