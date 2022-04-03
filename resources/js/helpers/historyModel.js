@@ -25,11 +25,19 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             return {
                 weeklyHistories: [
                     {
+                        when: 'April Week 01',
+                        actions: [
+                            { who: 'Sarah', what: '------'},
+                            { who: 'Aaron', what: '------'},
+                            { who: 'Jason', what: '------'},
+                        ]
+                    },
+                    {
                         when: 'March Week 05',
                         actions: [
                             { who: 'Sarah', what: 'further worked the bar chart'},
                             { who: 'Aaron', what: 'geo map refactor'},
-                            { who: 'Jason', what: 'general refactor + fixed bug with DDL (National)'},
+                            { who: 'Jason', what: 'general refactor + various bugs'},
                         ]
                     },
                     {

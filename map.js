@@ -14,9 +14,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     d3.select("#map").on("click", (e) => {
         let isOcean = e.path[0].tagName == 'svg';
         if (isOcean) {
-            zoomNational();
-            removeBar();
-            drawBar("National");
+            drawNational();
         }
      });
 
@@ -26,13 +24,9 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         console.log(state + " dropdown clicked!");
         selectedState = state;
         if (state == "National") {
-            zoomNational();
-            removeBar();
-            drawBar("National");
+            drawNational();
         } else {
-            zoomToState(selectedState);
-            removeBar();
-            drawBar(selectedState);
+            drawRegional(selectedState);
         }
         return false;
     }
@@ -118,14 +112,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
                     removeBar();
                     if (!zoomOut){
-                        drawBar(thisState);
+                        drawRegional(thisState);
                     } else {
-                        drawBar("National");
+                        drawNational();
                     }
                 })
-            zoomNational();
-            removeBar();
-            drawBar("National");
+            drawNational();
         });
 /*
         d3.csv('resources/data/usretechnicalpotential_national.csv').then(data => {
@@ -141,6 +133,22 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 
         })*/
     };
+
+    function drawNational(){
+        zoomNational();
+        removeBar();
+        drawBar("National");
+        document.getElementById("map").style.display = "block";
+        document.getElementById("chart").style.display = "none";
+    }
+
+    function drawRegional(region){            
+        zoomToState(region);
+        removeBar();
+        drawBar(region);
+        document.getElementById("chart").style.display = "block";
+        document.getElementById("map").style.display = "none";
+    }
     
     // function zoomFit(paddingPercent, transitionDuration) 
     // {
@@ -228,19 +236,37 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                             "translate(" + margin.left + "," + margin.top + ")");
 
         // add a title to the bar chart
-        // add scope to the bar chart too
         svg.append("text")      
-            .attr("x", (width / 2) - 150 )
+            .attr("x", (width / 2) - 130 )
             .attr("y",  -55)
             .attr("font-weight", 700)
             .style("text-anchor", "middle")
             .text(`Potential Generation Capacity (GW)`)
         svg.append("text")      
-            .attr("x", (width / 2) - 150 )
+            .attr("x", (width / 2) - 130 )
             .attr("y",  -35)
             .attr("font-weight", 700)
             .style("text-anchor", "middle")
             .text(`Scope: ${selectedState ? selectedState : "National"} `)
+
+        // add a back arrow
+        svg.append("text")
+            .attr("x", -60)
+            .attr("y", -55)
+            .style("cursor","pointer")
+            .text("<~~")
+            .on("click", () => { drawNational() })
+        ;
+
+        /*
+        
+        tt = document.getElementById("tooltip");
+        nametext = document.getElementById("tooltip_name");
+        nametext.innerHTML = d.properties["NAME"];
+        tt.style.left = e.pageX + "px";
+        tt.style.top = e.pageY + "px";
+        tt.style.display = "block";
+        //*/
         
         // get the data
         let data = []
