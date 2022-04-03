@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         return false;
     }
 
-
     var drawMap = function(){
         var svg = d3.select("#map")
             .append("svg")
@@ -113,7 +112,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     g.transition().duration(1000).attr("transform", t);
 
                     removeBar();
-                    drawBar(thisState);
+                    if (!zoomOut){
+                        drawBar(thisState);
+                    } else {
+                        drawBar("National");
+                    }
                 })
             zoomNational();
             removeBar();
@@ -211,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     var drawBar = async function(region){
-        var margin = {top: 60, right: 20, bottom: 85, left: 75},
+        var margin = {top: 80, right: 20, bottom: 15, left: 75},
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     
@@ -226,8 +229,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
         // add a title to the bar chart
         svg.append("text")      
-            .attr("x", (width / 2) - 25 ) // - 125
-            .attr("y",  -25)
+            .attr("x", (width / 2) - 150 )
+            .attr("y",  -45)
             .attr("font-weight", 700)
             .style("text-anchor", "middle")
             .text("Potential Generation Capacity (GW)")
@@ -241,31 +244,42 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             
             var needed = data.columns.slice(-7);
             var data_filt = data.filter(function(dd){return dd.Region==region});
+
             console.log(data_filt)
             // get multiple key values
             const subset = (({ all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}) => 
                 ({  all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}))(data_filt[0]);
             // transforms object into array
             const data_array = Object.entries(subset).map(([key, value]) => ({
-                    key: key,
-                    value: value
+                    key: groupMeta[key].key,
+                    value: value,
+                    color: groupMeta[key].color
             }));
+            // sort data_array in order of descending values
+            data_array.sort((a,b) => {
+                return (a.value >= b.value ? -1 : 1);
+            });
     
             // X axis
             var x = d3.scaleBand()
                 .range([ 0, width ])
-                .domain(data_array.map(function(d) { return d.key; }))
+                .domain(data_array.map( d => d.key ))
                 //.domain(data.map(function(d) { return d.Region; }))
                 //.domain(data_filt.map(function(d) { return d[0]; }))
                 //.domain(needed) // gets only the columns starting with 'all'
                 .padding(0.2);
+            svg.append("path")
+                .attr("d", d3.line()([[0,height + 0.5],[width,height + 0.5]]))
+                .attr("stroke", "black")
+                .attr("stroke-width", '1')
+                ;
+            /*
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x))
                 .selectAll("text")
                 .attr("transform", "translate(-10,0)rotate(-45)")
                 .style("text-anchor", "end");
-            /*
             //*/
     
             // Add Y axis
@@ -282,71 +296,119 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .enter()
             .append("rect")
                 .attr("x", function(d) { return x(d.key); } )
-                .attr("y", function(d) { return y(0); } )
+                .attr("y", function(_d) { return y(0); } )
                 .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(0); })
-                .attr("fill", "yellow")
+                .attr("height", _d => height - y(0))
+                .attr("fill", x  => x.color ) // return "yellow"
             ;
 
             // Animation
             svg.selectAll("rect")
             .transition()
             .duration(800)
-            .attr("y", function(d) { return y(d.value); })
-            .attr("height", function(d) { return height - y(d.value); })
-            .delay(function(_d,i){return(i*100)})
+            .attr("y", function(d) { 
+                if (y(d.value) > 0.975 * height) {
+                    return y(d.value) - 3; //height;
+                } else {
+                    return y(d.value);
+                }
+            })
+            .attr("height", function(d) {
+                if (y(d.value) > 0.975 * height) {
+                    return 0.01 * height;
+                } else {
+                    return height - y(d.value);
+                }
+            })
+            .delay(function(_d,i){return(i*100)});
+
+            // Values above bars
+            //*
+            svg.selectAll("mybarvalues")
+            .data(data_array)
+            .enter()
+            .append("text")
+                .attr("x", function(d, i) {
+                    return x(d.key) + parseInt((6 - d.value.toString().length) * 4.5);
+                })
+                .attr("y", function(d, i) {
+                    if (y(d.value) > 0.975 * height) {
+                        return y(d.value) - 7.5;
+                    } else {
+                        return y(d.value) - 5;
+                    }
+                })
+                .attr("fill", "black" )
+                .text(d => d.value)
+            ;
+            //*/
 
             // Legend
             let groups = Object.keys(data_filt[0]).filter(f => f.startsWith("all"));
-            let groupMeta = {
-                "all_PV": {
-                    name: "Photo Voltaic",
-                    color: d3.rgb(172, 190, 8), 
-                },
-                "all_Wind": {
-                    name: "Wind",
-                    color: d3.rgb(119, 192, 1),
-                },
-                "all_CSP": {
-                    name: "Consentrating Solar-Power",
-                    color: d3.rgb(208, 143, 25),
-                },
-                "all_biopower": {
-                    name: "Biopower",
-                    color: d3.rgb(32, 141, 200),
-                },
-                "all_Hydrothermal": {
-                    name: "Hydrothermal",
-                    color: d3.rgb(23, 180, 149),
-                },
-                "all_Geothermal": {
-                    name: "Geothermal",
-                    color: d3.rgb(206, 104, 29),
-                },
-                "all_hydropower": {
-                    name: "Hydropower",
-                    color: d3.rgb(166, 23, 165),
-                },
-                "unnamed01": {
-                    name: "unnamed01",
-                    color: d3.rgb(202, 20, 19),
-                },
-                "unnamed02": {
-                    name: "unnamed02",
-                    color: d3.rgb(91, 117, 142),
-                },
-                "unnamed03": {
-                    name: "unnamed03",
-                    color: d3.rgb(0, 0, 0),
+            // gives group friendly names
+            groups = groups
+                .map(group => {
+                    let match = { include: false, ...groupMeta[group]};
+                    let data_array_hits = data_array.filter(e => e.key == match.key);
+                    if (region == "National"){
+                        match.include = true;
+                    }
+                    else if (data_array_hits.length == 1){
+                        match.include = data_array_hits[0].value > 0;
+                    }
+                    
+                    return match;
                 }
-            };
-            // gives group friendly names + only includes the ones in the list
-            groups = groups.map(group => {
-                let rename = groupMeta[group];
-                if (rename){
-                    return rename.name;
-                }
-            });
+            );
+            // sort energy types
+            groups.sort((a,b) => { return a.key.localeCompare(b.key); });
+
+            // painting
+            var legend = svg.append("g")
+                .attr("transform", function(_d, i) { return "translate(0," + i * height + ")"; });
+            legend.append("rect")
+                .attr("width", 230 )
+                .attr("height", groups.length * 26 + 42 )
+                .attr("x", width - 225 )
+                .attr("y",  -68 )
+                .attr("fill", 'white')
+                .attr("stroke", 'black')
+                .attr("stroke-width", '1')
+                ;
+            legend.append('text')
+                .attr("x", width - 205 )
+                .attr("y",  -45)
+                .attr("font-weight", 500)
+                .text("Energy Types");
+
+            svg.selectAll("mybarlegend")
+                .data(groups)
+                .enter()
+                    .append("rect")
+                        .attr("width", 207 )
+                        .attr("height", 23 )
+                        .attr("x", width - 213 )
+                        .attr("y", (_x,i) => -35 + 26 * i )
+                        .style('fill', x => x.include ? x.color : 'white')
+                        .attr("stroke", 'black')
+                        .attr("stroke-width", '1')
+                        .on("click", (_event, d) => {
+                            console.log(`placeholder for filtering data on ${d.key} (bar click)`);
+                        })
+            ;
+            svg.selectAll("mybarlegend")
+                    .data(groups)
+                    .enter()
+                        .append("text")
+                            .attr("x", width - 205 )
+                            .attr("y", (_x,i) => -19 + 26 * i )
+                            .style('fill', 'white')
+                            .text((_x,i) => groups[i].key)
+                            .on("click", (_event, d) => {
+                                console.log(`placeholder for filtering data on ${d.key} (text click)`);
+                            })
+                            ;
+            //*/
         })
     
     }
