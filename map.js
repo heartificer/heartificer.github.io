@@ -1,6 +1,6 @@
 var width = 1000;
 var height = 500;
-var selectedState = "";
+var selectedState = "National";
 
 document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
 
@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     var drawBar = async function(region, type){
-        var margin = {top: 80, right: 20, bottom: 15, left: 75},
+        var margin = {top: 90, right: 20, bottom: 15, left: 75},
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     
@@ -228,12 +228,19 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                             "translate(" + margin.left + "," + margin.top + ")");
 
         // add a title to the bar chart
+        // add scope to the bar chart too
         svg.append("text")      
             .attr("x", (width / 2) - 150 )
-            .attr("y",  -45)
+            .attr("y",  -55)
             .attr("font-weight", 700)
             .style("text-anchor", "middle")
-            .text("Potential Generation Capacity (GW)")
+            .text(`Potential Generation Capacity (GW)`)
+        svg.append("text")      
+            .attr("x", (width / 2) - 150 )
+            .attr("y",  -35)
+            .attr("font-weight", 700)
+            .style("text-anchor", "middle")
+            .text(`Scope: ${selectedState ? selectedState : "National"} `)
         
         // get the data
         let data = []
@@ -385,14 +392,14 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 .attr("width", 230 )
                 .attr("height", groups.length * 26 + 42 )
                 .attr("x", width - 225 )
-                .attr("y",  -68 )
+                .attr("y",  -78 )
                 .attr("fill", 'white')
                 .attr("stroke", 'black')
                 .attr("stroke-width", '1')
                 ;
             legend.append('text')
                 .attr("x", width - 205 )
-                .attr("y",  -45)
+                .attr("y",  -55)
                 .attr("font-weight", 500)
                 .text("Energy Types");
 
@@ -403,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                         .attr("width", 207 )
                         .attr("height", 23 )
                         .attr("x", width - 213 )
-                        .attr("y", (_x,i) => -35 + 26 * i )
+                        .attr("y", (_x,i) => -45 + 26 * i )
                         .style('fill', x => x.include && !x.hidden ? x.color : 'white')
                         .attr("stroke", 'black')
                         .attr("stroke-width", '1')
@@ -417,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .enter()
                         .append("text")
                             .attr("x", width - 205 )
-                            .attr("y", (_x,i) => -19 + 26 * i )
+                            .attr("y", (_x,i) => -29 + 26 * i )
                             .style('fill', x => x.hidden ? 'black' : 'white')
                             .text((_x,i) => groups[i].key)
                             .on("click", (_event, d) => {
