@@ -276,7 +276,9 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             //console.log(data);
             
             var needed = data.columns.slice(-7);
-            var data_filt = data.filter(function(dd){return dd.Region==region});
+            let correctedRgion = region == "DistrictofColumbia" ? "District of Columbia" : region;
+
+            var data_filt = data.filter(function(dd){return dd.Region == correctedRgion});
 
             console.log(data_filt)
             // get multiple key values
