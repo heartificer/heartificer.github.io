@@ -27,9 +27,9 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     {
                         when: 'April Week 01',
                         actions: [
-                            { who: 'Sarah', what: '------'},
-                            { who: 'Aaron', what: '------'},
-                            { who: 'Jason', what: '------'},
+                            { who: 'Sarah', what: 'analysis documentation review and vis bug fixes'},
+                            { who: 'Aaron', what: 'visualization bug fixes'},
+                            { who: 'Jason', what: 'visualization bug fixes'},
                         ]
                     },
                     {
