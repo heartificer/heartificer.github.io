@@ -300,6 +300,19 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 }
             }
 
+            // filter out data if zero
+            if (Object.keys(subset).filter(key => subset[key] == 0).length > 0) {
+                let revisedSubset = {};
+                Object.keys(groupMeta).forEach(key => {
+                    if (subset[key] > 0) {
+                        revisedSubset[key] = subset[key];
+                    } else {
+                        groupMeta[key].include = false;
+                    }
+                })
+                subset = revisedSubset;
+            }
+
             // transforms object into array
             let data_array = Object.entries(subset).map(([key, value]) => ({
                     key: groupMeta[key].key,
@@ -398,15 +411,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             // gives group friendly names
             groups = groups
                 .map(group => {
-                    let match = { include: false, hide: false, ...groupMeta[group]};
-                    let data_array_hits = data_array.filter(e => e.key == match.key);
-                    if (region == "National"){
-                        match.include = true;
-                    }
-                    else if (data_array_hits.length == 1){
-                        match.include = data_array_hits[0].value > 0;
-                    }
-                    
+                    let match = groupMeta[group];
+                    match.include = region == "" || region == "National" ? true : !!subset[group];
                     return match;
                 }
             );
