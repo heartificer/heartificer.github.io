@@ -142,7 +142,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         document.getElementById("chart").style.display = "none";
     }
 
-    function drawRegional(region){            
+    function drawRegional(region){  
+        console.log(region);          
         zoomToState(region);
         removeBar();
         drawBar(region);
@@ -199,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     function zoomToState(s){
-        st = d3.select("#state_" + s);
+        st = d3.select("#state_" + s.replace(/\s/g, ''));
         const bounds = st.node().getBBox();
         const x0 = bounds.x;
         const x1 = bounds.x + bounds.width;
