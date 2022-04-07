@@ -361,8 +361,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 .attr("y", function(_d) { return y(0); } )
                 .attr("width", x.bandwidth())
                 .attr("height", _d => height - y(0))
-                .attr("fill", x  => x.color ) // return "yellow"
-            ;
+                .attr("fill", x  => x.color );
 
             // Animation
             svg.selectAll("rect")
@@ -370,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .duration(800)
             .attr("y", function(d) { 
                 if (y(d.value) > 0.975 * height) {
-                    return y(d.value) - 3; //height;
+                    return y(d.value) - 3;
                 } else {
                     return y(d.value);
                 }
@@ -389,10 +388,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .data(data_array)
             .enter()
             .append("text")
-                .attr("x", function(d, i) {
-                    return x(d.key) + (x.bandwidth()/2) - (d.value.toString().length * 4);
-                })
-                .attr("y", function(d, i) {
+                .attr("x", d => x(d.key) + (x.bandwidth()/2) - (d.value.toString().length * 4) )
+                .attr("y", function(d) {
                     if (y(d.value) > 0.975 * height) {
                         return y(d.value) - 7.5;
                     } else {
@@ -404,13 +401,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             ;
 
             // Legend
-            drawLegend(svg, data_filt, region, subset, height, width);
-            
-        })
-    
+            drawLegend(svg, data_filt, region, subset, width, (_event, d) => { removeBar(); drawBar(region, d.key); });            
+        })    
     }
 
-    let drawLegend = (hook, source, region, subset, height, width) => {
+    let drawLegend = (hook, source, region, subset, width, onclick) => {
 
         // scope the source and add meta
         let groups = Object.keys(source[0])
@@ -445,7 +440,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .text("Energy Types");
 
         // adds the legend energy selection bars
-        hook.selectAll("mybarlegend")
+        hook.selectAll("legend_bar_field")
             .data(groups)
             .enter()
                 .append("rect")
@@ -456,13 +451,10 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .style('fill', x => x.include && !x.hidden ? x.color : 'white')
                     .attr("stroke", 'black')
                     .attr("stroke-width", '1')
-                    .on("click", (_event, d) => {
-                        removeBar();
-                        drawBar(region, d.key);
-                    });
+                    .on("click", onclick);
 
         // adds the labels for the energy selection bars
-        hook.selectAll("mybarlegend")
+        hook.selectAll("legend_bar_text")
             .data(groups)
             .enter()
                 .append("text")
@@ -470,10 +462,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .attr("y", (_x,i) => -29 + 26 * i )
                     .style('fill', x => x.hidden ? 'black' : 'white')
                     .text((_x,i) => groups[i].key)
-                    .on("click", (_event, d) => {
-                        removeBar();
-                        drawBar(region, d.key);
-                    });
+                    .on("click", onclick);
         //*/
     }
 
