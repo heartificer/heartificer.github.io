@@ -404,68 +404,77 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             ;
 
             // Legend
-            let groups = Object.keys(data_filt[0]).filter(f => f.startsWith("all"));
-            // gives group friendly names
-            groups = groups
-                .map(group => {
-                    let match = groupMeta[group];
-                    match.include = region == "" || region == "National" ? true : !!subset[group];
-                    return match;
-                }
-            );
-            // sort energy types
-            groups.sort((a,b) => { return a.key.localeCompare(b.key); });
-
-            // painting
-            var legend = svg.append("g")
-                .attr("transform", function(_d, i) { return "translate(0," + i * height + ")"; });
-            legend.append("rect")
-                .attr("width", 230 )
-                .attr("height", groups.length * 26 + 42 )
-                .attr("x", width - 225 )
-                .attr("y",  -78 )
-                .attr("fill", 'white')
-                .attr("stroke", 'black')
-                .attr("stroke-width", '1')
-                ;
-            legend.append('text')
-                .attr("x", width - 205 )
-                .attr("y",  -55)
-                .attr("font-weight", 500)
-                .text("Energy Types");
-
-            svg.selectAll("mybarlegend")
-                .data(groups)
-                .enter()
-                    .append("rect")
-                        .attr("width", 207 )
-                        .attr("height", 23 )
-                        .attr("x", width - 213 )
-                        .attr("y", (_x,i) => -45 + 26 * i )
-                        .style('fill', x => x.include && !x.hidden ? x.color : 'white')
-                        .attr("stroke", 'black')
-                        .attr("stroke-width", '1')
-                        .on("click", (_event, d) => {
-                            removeBar();
-                            drawBar(region, d.key);
-                        })
-            ;
-            svg.selectAll("mybarlegend")
-                    .data(groups)
-                    .enter()
-                        .append("text")
-                            .attr("x", width - 205 )
-                            .attr("y", (_x,i) => -29 + 26 * i )
-                            .style('fill', x => x.hidden ? 'black' : 'white')
-                            .text((_x,i) => groups[i].key)
-                            .on("click", (_event, d) => {
-                                removeBar();
-                                drawBar(region, d.key);
-                            })
-                            ;
-            //*/
+            drawLegend(svg, data_filt, region, subset, height, width);
+            
         })
     
+    }
+
+    let drawLegend = (hook, source, region, subset, height, width) => {
+
+        // scope the source and add meta
+        let groups = Object.keys(source[0])
+                           .filter(f => f.startsWith("all"))
+                           .map(group => {
+                            let match = groupMeta[group];
+                            match.include = region == "" || region == "National" ? true : !!subset[group];
+                            return match;
+                        });
+
+        // sort energy types
+        groups.sort((a,b) => { return a.key.localeCompare(b.key); });
+
+        // instantiates the legend object
+        var legend = hook.append("g");
+
+        // adds the container
+        legend.append("rect")
+            .attr("width", 230 )
+            .attr("height", groups.length * 26 + 42 )
+            .attr("x", width - 225 )
+            .attr("y",  -78 )
+            .attr("fill", 'white')
+            .attr("stroke", 'black')
+            .attr("stroke-width", '1');
+
+        // adds a legend label
+        legend.append('text')
+            .attr("x", width - 205 )
+            .attr("y",  -55)
+            .attr("font-weight", 500)
+            .text("Energy Types");
+
+        // adds the legend energy selection bars
+        hook.selectAll("mybarlegend")
+            .data(groups)
+            .enter()
+                .append("rect")
+                    .attr("width", 207 )
+                    .attr("height", 23 )
+                    .attr("x", width - 213 )
+                    .attr("y", (_x,i) => -45 + 26 * i )
+                    .style('fill', x => x.include && !x.hidden ? x.color : 'white')
+                    .attr("stroke", 'black')
+                    .attr("stroke-width", '1')
+                    .on("click", (_event, d) => {
+                        removeBar();
+                        drawBar(region, d.key);
+                    });
+
+        // adds the labels for the energy selection bars
+        hook.selectAll("mybarlegend")
+            .data(groups)
+            .enter()
+                .append("text")
+                    .attr("x", width - 205 )
+                    .attr("y", (_x,i) => -29 + 26 * i )
+                    .style('fill', x => x.hidden ? 'black' : 'white')
+                    .text((_x,i) => groups[i].key)
+                    .on("click", (_event, d) => {
+                        removeBar();
+                        drawBar(region, d.key);
+                    });
+        //*/
     }
 
     drawMap();
