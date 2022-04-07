@@ -138,16 +138,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         zoomNational();
         removeBar();
         drawBar("National");
-        document.getElementById("map").style.display = "block";
-        document.getElementById("chart").style.display = "none";
     }
 
     function drawRegional(region){            
         zoomToState(region);
         removeBar();
         drawBar(region);
-        document.getElementById("chart").style.display = "block";
-        document.getElementById("map").style.display = "none";
     }
     
     // function zoomFit(paddingPercent, transitionDuration) 
