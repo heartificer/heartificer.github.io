@@ -301,8 +301,34 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
             console.log(data_filt)
             // get multiple key values
-            let subset = (({ all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}) => 
-                ({  all_PV, all_Wind, all_CSP, all_biopower, all_Hydrothermal, all_Geothermal, all_hydropower}))(data_filt[0]);
+            let subset = ((
+                {
+                    all_PV,
+                    all_Wind,
+                    all_CSP,
+                    all_biopower,
+                    all_Hydrothermal,
+                    all_Geothermal,
+                    all_hydropower,
+                    Coal,
+                    NaturalGas,
+                    Other
+                }
+            ) => (
+                {
+                    all_PV,
+                    all_Wind,
+                    all_CSP,
+                    all_biopower,
+                    all_Hydrothermal,
+                    all_Geothermal,
+                    all_hydropower,
+                    Coal,
+                    NaturalGas,
+                    Other
+                }
+            ))(data_filt[0]);
+            Object.keys(subset).forEach(key => subset[key] = !subset[key] ? 0 : subset[key]);
 
             // filter out type, if hidden
             if (type) {

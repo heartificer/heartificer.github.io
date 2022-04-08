@@ -41,7 +41,7 @@ let groupMeta = {
         hidden: false
     },
     "NaturalGas": {
-        key: "NaturalGas",
+        key: "Natural Gas",
         color: '#9467bd',
         hidden: false
     },
