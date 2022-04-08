@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
                 // state border coloring
                 .attr("fill", "black")
-                .attr("stroke-width", "0.0625")
+                .attr("stroke-width", "0.2")
                 .attr("stroke", "black")
                 .on("mousemove", function(e, d) {
                     d3.select(this).style("fill", "yellow")
