@@ -25,6 +25,14 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             return {
                 weeklyHistories: [
                     {
+                        when: 'April Week 02',
+                        actions: [
+                            { who: 'Sarah', what: 'toggle bar chart between actual and potential'},
+                            { who: 'Aaron', what: 'bug fixes, power plant display/coloring, zoom fixes, minor graphics tweaks, tooltip updates'},
+                            { who: 'Jason', what: 'bug fixes, legend filtering/coloring,barchart/map/dropdown interactions'},
+                        ]
+                    },
+                    {
                         when: 'April Week 01',
                         actions: [
                             { who: 'Sarah', what: 'analysis documentation review and vis bug fixes'},
