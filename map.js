@@ -1,4 +1,4 @@
-var width = 1000;
+var width = 800;
 var height = 500;
 var selectedState = "National";
 
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     }
                     else
                     {
-                        var t = "translate(-600,-450) scale(5)";
+                        var t = "translate(-725,-450) scale(5)";
                         selectedState = "";
                     }
 
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     function zoomNational(){
-        zoomTo(-600, -450, 5);
+        zoomTo(-725, -450, 5);
         selectedState = "";
     }
 
@@ -243,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     var drawBar = async function(region, type){
         var margin = {top: 90, right: 20, bottom: 15, left: 75},
         width = 600 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 493.5 - margin.top - margin.bottom;
     
         // add chart to the barchart div
         var svg = d3.select("#chart")

@@ -7,47 +7,97 @@ let groupMeta = {
     },
     "all_Wind": {
         key: "Wind",
-        color: '#ff7f0e',
+        color: '#aec7e8',
         hidden: false
     },
     "all_CSP": {
         key: "Consentrating Solar-Power",
-        color: '#2ca02c',
+        color: '#ff7f0e',
         hidden: false
     },
     "all_biopower": {
         key: "Biopower",
-        color: '#d62728',
+        color: '#ffbb78',
         hidden: false
     },
     "all_Hydrothermal": {
         key: "Hydrothermal",
-        color: '#9467bd',
+        color: '#2ca02c',
         hidden: false
     },
     "all_Geothermal": {
         key: "Geothermal",
-        color: '#8c564b',
+        color: '#98df8a',
         hidden: false
     },
     "all_hydropower": {
         key: "Hydropower",
-        color: '#e377c2',
+        color: '#d62728',
         hidden: false
     },
     "Coal": {
         key: "Coal",
-        color: '#7f7f7f',
+        color: '#ff9896',
         hidden: false
     },
     "NaturalGas": {
         key: "NaturalGas",
-        color: '#bcbd22',
+        color: '#9467bd',
         hidden: false
     },
     "Other": {
         key: "Other",
+        color: '#c5b0d5',
+        hidden: false 
+    },
+    "unnamed04": {
+        key: "unnamed04",
+        color: '#8c564b',
+        hidden: false 
+    },
+    "unnamed05": {
+        key: "unnamed05",
+        color: '#c49c94',
+        hidden: false 
+    },
+    "unnamed06": {
+        key: "unnamed06",
+        color: '#e377c2',
+        hidden: false 
+    },
+    "unnamed07": {
+        key: "unnamed07",
+        color: '#f7b6d2',
+        hidden: false 
+    },
+    "unnamed08": {
+        key: "unnamed08",
+        color: '#7f7f7f',
+        hidden: false 
+    },
+    "unnamed09": {
+        key: "unnamed09",
+        color: '#c7c7c7',
+        hidden: false 
+    },
+    "unnamed10": {
+        key: "unnamed10",
+        color: '#bcbd22',
+        hidden: false 
+    },
+    "unnamed11": {
+        key: "unnamed11",
+        color: '#dbdb8d',
+        hidden: false 
+    },
+    "unnamed12": {
+        key: "unnamed12",
         color: '#17becf',
+        hidden: false 
+    },
+    "unnamed13": {
+        key: "unnamed13",
+        color: '#9edae5',
         hidden: false 
     }
 };
