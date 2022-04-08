@@ -22,6 +22,10 @@ svg{
     border-radius: 15px;
 }
 
+.plantcircle{
+    pointer-events:none;
+}
+
 #tooltip_name
 {
     color: yellow;

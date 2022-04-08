@@ -2,13 +2,16 @@ var width = 1000;
 var height = 500;
 var selectedState = "National";
 
-document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
 
-    var mapdata;
+
+document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
 
     const pathref = d3.geoPath();
     const projection = d3.geoMercator();
     const pathgen = d3.geoPath().projection(projection);
+
+    var mapdata;
+    saver = pathgen;
 
     // add on-click
     d3.select("#map").on("click", (e) => {
@@ -117,9 +120,11 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                         drawNational();
                     }
                 })
+            
             drawNational();
+            drawNationalDots();
         });
-/*
+        /*
         d3.csv('resources/data/usretechnicalpotential_national.csv').then(data => {
             energydata = data
             console.log(data)
@@ -133,6 +138,23 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                 
         })*/
     };
+
+    function drawNationalDots(){
+        d3.json("resources/data/plants.json").then((data) =>{
+            var svg = d3.select("#map svg g");
+            svg.selectAll(".m")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("class", "plantcircle")
+            .attr("r", .25)
+            .style("fill", "red")
+            .attr("transform", (d) => {
+                let p = projection([d.long,d.lat]);
+                return `translate(${p[0]}, ${p[1]})`;
+            });
+        });
+    }
 
     function drawNational(){
         zoomNational();
