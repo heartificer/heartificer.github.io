@@ -35,18 +35,18 @@ let groupMeta = {
         color: '#e377c2',
         hidden: false
     },
-    "unnamed01": {
-        key: "unnamed01",
+    "Coal": {
+        key: "Coal",
         color: '#7f7f7f',
         hidden: false
     },
-    "unnamed02": {
-        key: "unnamed02",
+    "NaturalGas": {
+        key: "NaturalGas",
         color: '#bcbd22',
         hidden: false
     },
-    "unnamed03": {
-        key: "unnamed03",
+    "Other": {
+        key: "Other",
         color: '#17becf',
         hidden: false 
     }
