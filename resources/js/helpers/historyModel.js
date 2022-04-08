@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                         when: 'April Week 01',
                         actions: [
                             { who: 'Sarah', what: 'analysis documentation review and vis bug fixes'},
-                            { who: 'Aaron', what: 'visualization bug fixes, power plant distribution, zoom fixes, minor graphics tweaks, tooltip updates'},
+                            { who: 'Aaron', what: 'visualization bug fixes'},
                             { who: 'Jason', what: 'bug fixes + refactored legend'},
                         ]
                     },
