@@ -1,62 +1,62 @@
 // colors came from d3.schemeCategory10
 let groupMeta = {
-    "all_PV": {
+    "pv_GW": {
         key: "Photo Voltaic",
         color: '#1f77b4',
         hidden: false
     },
-    "all_Wind": {
+    "wind_GW": {
         key: "Wind",
         color: '#aec7e8',
         hidden: false
     },
-    "all_CSP": {
+    "csp_GW": {
         key: "Consentrating Solar-Power",
         color: '#ff7f0e',
         hidden: false
     },
-    "all_biopower": {
+    "biopower_GW": {
         key: "Biopower",
         color: '#ffbb78',
         hidden: false
     },
-    "all_Hydrothermal": {
+    "hydrothermal_GW": {
         key: "Hydrothermal",
         color: '#2ca02c',
         hidden: false
     },
-    "all_Geothermal": {
+    "geothermal_GW": {
         key: "Geothermal",
         color: '#98df8a',
         hidden: false
     },
-    "all_hydropower": {
+    "hydropower_GW": {
         key: "Hydropower",
         color: '#d62728',
         hidden: false
     },
-    "Coal": {
+    "coal_GW": {
         key: "Coal",
         color: '#ff9896',
         hidden: false
     },
-    "NaturalGas": {
+    "naturalGas_GW": {
         key: "Natural Gas",
         color: '#9467bd',
         hidden: false
     },
-    "Other": {
+    "other_GW": {
         key: "Other",
         color: '#c5b0d5',
         hidden: false 
     },
-    "unnamed04": {
-        key: "unnamed04",
+    "petroleum_GW": {
+        key: "Petroleum",
         color: '#8c564b',
         hidden: false 
     },
-    "unnamed05": {
-        key: "unnamed05",
+    "nuclear_GW": {
+        key: "Nuclear",
         color: '#c49c94',
         hidden: false 
     },

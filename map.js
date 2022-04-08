@@ -1,7 +1,7 @@
 var width = 800;
 var height = 500;
 var selectedState = "National";
-
+var energy_type = "Actual"
 
 
 document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         width = 600 - margin.left - margin.right,
         height = 493.5 - margin.top - margin.bottom;
     
-        // add chart to the barchart div
+        // add bar chart to the chart div
         var svg = d3.select("#chart")
                     .append("svg")
                         .attr("width", width + margin.left + margin.right)
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .attr("y",  -55)
             .attr("font-weight", 700)
             .style("text-anchor", "middle")
-            .text(`Potential Generation Capacity (GW)`)
+            .text(`${energy_type} Generation Capacity (GW)`)
         svg.append("text")      
             .attr("x", (width / 2) - 130 )
             .attr("y",  -35)
@@ -289,8 +289,20 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         //*/
         
         // get the data
+        const potential =  document.querySelector('#potentialCheckbox')
+
+        if (potential.checked){
+            console.log('drawing Potential energy')
+            energy_type = "Potential"
+            data_file = "resources/data/usretechnicalpotential_column_aggs.csv";
+        } else {
+            console.log('drawing Actual energy')
+            energy_type = "Actual"
+            data_file = "resources/data/Power_Plants_state_and_natl_agg.csv";
+        }
+            
         let data = []
-        await d3.csv('resources/data/usretechnicalpotential_column_aggs.csv', d3.autoType)
+        await d3.csv(data_file, d3.autoType)
         .then(d => {
             data = d
             //console.log(data);
@@ -304,29 +316,33 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             // get multiple key values
             let subset = ((
                 {
-                    all_PV,
-                    all_Wind,
-                    all_CSP,
-                    all_biopower,
-                    all_Hydrothermal,
-                    all_Geothermal,
-                    all_hydropower,
-                    Coal,
-                    NaturalGas,
-                    Other
+                    pv_GW,
+                    wind_GW,
+                    csp_GW,
+                    biopower_GW,
+                    hydrothermal_GW,
+                    geothermal_GW,
+                    hydropower_GW,
+                    coal_GW,
+                    naturalGas_GW,
+                    other_GW,
+                    petroleum_GW,
+                    nuclear_GW
                 }
             ) => (
                 {
-                    all_PV,
-                    all_Wind,
-                    all_CSP,
-                    all_biopower,
-                    all_Hydrothermal,
-                    all_Geothermal,
-                    all_hydropower,
-                    Coal,
-                    NaturalGas,
-                    Other
+                    pv_GW,
+                    wind_GW,
+                    csp_GW,
+                    biopower_GW,
+                    hydrothermal_GW,
+                    geothermal_GW,
+                    hydropower_GW,
+                    coal_GW,
+                    naturalGas_GW,
+                    other_GW,
+                    petroleum_GW,
+                    nuclear_GW
                 }
             ))(data_filt[0]);
             Object.keys(subset).forEach(key => subset[key] = !subset[key] ? 0 : subset[key]);
@@ -464,7 +480,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
         // scope the source and add meta
         let groups = Object.keys(source[0])
-                           .filter(f => f.startsWith("all"))
+                           .filter(f => f.endsWith("_GW"))
                            .map(group => {
                             let match = groupMeta[group];
                             match.include = region == "" || region == "National" ? true : !!subset[group];
@@ -522,7 +538,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     }
 
     drawMap();
-    drawBar("National");
+    //drawBar("National", "Potential");
   } /* cease "DOMContentLoaded" event */
 );   
 
