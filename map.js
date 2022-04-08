@@ -141,6 +141,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
 
     function drawNationalDots(){
         d3.json("resources/data/plants.json").then((data) =>{
+
             var svg = d3.select("#map svg g");
             svg.selectAll(".m")
             .data(data)
@@ -330,13 +331,19 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             ))(data_filt[0]);
             Object.keys(subset).forEach(key => subset[key] = !subset[key] ? 0 : subset[key]);
 
-            // filter out type, if hidden
+            // handle updating groupMeta
             if (type) {
                 let groupMetaKeys = Object.keys(groupMeta).filter(g => groupMeta[g].key == type);
                 if (groupMetaKeys.length == 1) {
                     let matchingKey = groupMetaKeys[0];
                     groupMeta[matchingKey].hidden = !groupMeta[matchingKey].hidden;
+                }
+            }
 
+            // handle filtering out type, if needed
+            if (type) {
+                let groupMetaKeys = Object.keys(groupMeta).filter(g => groupMeta[g].key == type);
+                if (groupMetaKeys.length == 1) {
                     let revisedSubset = {};
                     Object.keys(groupMeta).filter(gmKey => !groupMeta[gmKey].hidden && !gmKey.startsWith('unnamed')).forEach(key => {
                         revisedSubset[key] = subset[key];
