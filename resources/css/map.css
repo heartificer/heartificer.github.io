@@ -74,3 +74,13 @@ svg{
     display:inline-block;
     margin: 0 auto;
 }
+
+#potentialCheckbox:checked
+{
+    background-color: blue;
+}
+
+#potentialCheckbox
+{
+    background-color: blue;
+}

@@ -265,7 +265,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         // get the data
         const potential =  document.querySelector('#potentialCheckbox')
         potential.addEventListener('click', (e) => cbClick(e, region));
-
+        const potentialText = document.querySelector('#potentialText');
+        console.log(potentialText);
         if (potential.checked){
             console.log('drawing Potential energy')
             energy_type = "Potential"
