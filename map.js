@@ -155,6 +155,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .append("circle")
             .attr("class", "plantcircle")
             .attr("r", .25)
+            .style("stroke", 'black')
+            .attr("stroke-width", '.05')
             .style("fill", (d) => { try{ return groupMeta[d.type].color; }catch{console.log(d.type);}})
             .attr("transform", (d) => {
                 let p = projection([d.long,d.lat]);
