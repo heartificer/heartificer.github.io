@@ -34,6 +34,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         return false;
     }
 
+    function cbClick(e, region)
+    {
+        removeBar();
+        drawBar(region)
+    }
+
     var drawMap = function(){
         var svg = d3.select("#map")
             .append("svg")
@@ -254,6 +260,21 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .append("g")
                         .attr("transform",
                             "translate(" + margin.left + "," + margin.top + ")");
+        
+        // check to see what type (actual or potential) of chart to draw
+        // get the data
+        const potential =  document.querySelector('#potentialCheckbox')
+        potential.addEventListener('click', (e) => cbClick(e, region));
+
+        if (potential.checked){
+            console.log('drawing Potential energy')
+            energy_type = "Potential"
+            data_file = "resources/data/usretechnicalpotential_column_aggs.csv";
+        } else {
+            console.log('drawing Actual energy')
+            energy_type = "Actual"
+            data_file = "resources/data/Power_Plants_state_and_natl_agg.csv";
+        }
 
         // add a title to the bar chart
         svg.append("text")      
@@ -288,18 +309,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         tt.style.display = "block";
         //*/
         
-        // get the data
-        const potential =  document.querySelector('#potentialCheckbox')
-
-        if (potential.checked){
-            console.log('drawing Potential energy')
-            energy_type = "Potential"
-            data_file = "resources/data/usretechnicalpotential_column_aggs.csv";
-        } else {
-            console.log('drawing Actual energy')
-            energy_type = "Actual"
-            data_file = "resources/data/Power_Plants_state_and_natl_agg.csv";
-        }
             
         let data = []
         await d3.csv(data_file, d3.autoType)
@@ -311,8 +320,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             let correctedRgion = region == "DistrictofColumbia" ? "District of Columbia" : region;
 
             var data_filt = data.filter(function(dd){return dd.Region == correctedRgion});
-
             console.log(data_filt)
+
             // get multiple key values
             let subset = ((
                 {
