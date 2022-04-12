@@ -551,6 +551,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                     .style('fill', x => x.include && !x.hidden ? x.color : 'white')
                     .attr("stroke", 'black')
                     .attr("stroke-width", '1')
+                    .attr("cursor", "pointer")
                     .on("click", onclick);
 
         // adds the labels for the energy selection bars
@@ -560,6 +561,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                 .append("text")
                     .attr("x", width - 205 )
                     .attr("y", (_x,i) => -29 + 26 * i )
+                    .attr("cursor", "pointer")
                     .style('fill', x => x.hidden ? 'black' : 'white')
                     .text((_x,i) => groups[i].key)
                     .on("click", onclick);
