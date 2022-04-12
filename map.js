@@ -281,7 +281,11 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         // check to see what type (actual or potential) of chart to draw
         // get the data
         const potential =  document.querySelector('#potentialCheckbox')
-        potential.addEventListener('click', (e) => cbClick(e, region));
+        // wire up the on click while also ensuring it does not inherit any previous similar events
+        const potentialClone = potential.cloneNode(true);
+        potential.parentNode.replaceChild(potentialClone, potential);
+        potentialClone.addEventListener('click', (e) => cbClick(e, region));
+        
         const potentialText = document.querySelector('#potentialText');
         if (potential.checked){
             console.log('drawing Potential energy');
