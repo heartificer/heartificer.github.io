@@ -3,6 +3,7 @@ var height = 500;
 var selectedState = "National";
 var energy_group = "Actual"
 let energy_type = "";
+let energy_group_data = {Actual:{}, Potential:{}};
 
 document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMContentLoaded" event */
 
@@ -324,181 +325,180 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         tt.style.top = e.pageY + "px";
         tt.style.display = "block";
         //*/
-        
-            
+
         let data = []
-        await d3.csv(data_file, d3.autoType)
-        .then(d => {
-            data = d
-            //console.log(data);
-            
-            var needed = data.columns.slice(-7);
-            let correctedRgion = region == "DistrictofColumbia" ? "District of Columbia" : region;
+        if (energy_group_data[energy_group]) {
+            await d3.csv(data_file, d3.autoType).then(d => energy_group_data[energy_group] = d);
+        }
+        data = d = energy_group_data[energy_group];
+        //console.log(data);
+        
+        var needed = data.columns.slice(-7);
+        let correctedRgion = region == "DistrictofColumbia" ? "District of Columbia" : region;
 
-            var data_filt = data.filter(function(dd){return dd.Region == correctedRgion});
-            console.log(data_filt)
+        var data_filt = data.filter(function(dd){return dd.Region == correctedRgion});
+        console.log(data_filt)
 
-            // get multiple key values
-            let subset = ((
-                {
-                    pv_GW,
-                    wind_GW,
-                    csp_GW,
-                    biopower_GW,
-                    hydrothermal_GW,
-                    geothermal_GW,
-                    hydropower_GW,
-                    coal_GW,
-                    naturalGas_GW,
-                    other_GW,
-                    petroleum_GW,
-                    nuclear_GW
-                }
-            ) => (
-                {
-                    pv_GW,
-                    wind_GW,
-                    csp_GW,
-                    biopower_GW,
-                    hydrothermal_GW,
-                    geothermal_GW,
-                    hydropower_GW,
-                    coal_GW,
-                    naturalGas_GW,
-                    other_GW,
-                    petroleum_GW,
-                    nuclear_GW
-                }
-            ))(data_filt[0]);
-            Object.keys(subset).forEach(key => subset[key] = !subset[key] ? 0 : subset[key]);
-
-            // handle updating groupMeta
-            if (type) {
-                let groupMetaKeys = Object.keys(groupMeta).filter(g => groupMeta[g].key == type);
-                if (groupMetaKeys.length == 1) {
-                    let matchingKey = groupMetaKeys[0];
-                    groupMeta[matchingKey].hidden = !groupMeta[matchingKey].hidden;
-                }
+        // get multiple key values
+        let subset = ((
+            {
+                pv_GW,
+                wind_GW,
+                csp_GW,
+                biopower_GW,
+                hydrothermal_GW,
+                geothermal_GW,
+                hydropower_GW,
+                coal_GW,
+                naturalGas_GW,
+                other_GW,
+                petroleum_GW,
+                nuclear_GW
             }
-
-            // handle filtering out type, if needed
-            if (type) {
-                let groupMetaKeys = Object.keys(groupMeta).filter(g => groupMeta[g].key == type);
-                if (groupMetaKeys.length == 1) {
-                    let revisedSubset = {};
-                    Object.keys(groupMeta).filter(gmKey => !groupMeta[gmKey].hidden && !gmKey.startsWith('unnamed')).forEach(key => {
-                        revisedSubset[key] = subset[key];
-                    })
-                    subset = revisedSubset;
-                }
+        ) => (
+            {
+                pv_GW,
+                wind_GW,
+                csp_GW,
+                biopower_GW,
+                hydrothermal_GW,
+                geothermal_GW,
+                hydropower_GW,
+                coal_GW,
+                naturalGas_GW,
+                other_GW,
+                petroleum_GW,
+                nuclear_GW
             }
+        ))(data_filt[0]);
+        Object.keys(subset).forEach(key => subset[key] = !subset[key] ? 0 : subset[key]);
 
-            // filter out data if zero
-            if (Object.keys(subset).filter(key => subset[key] == 0).length > 0) {
+        // handle updating groupMeta
+        if (type) {
+            let groupMetaKeys = Object.keys(groupMeta).filter(g => groupMeta[g].key == type);
+            if (groupMetaKeys.length == 1) {
+                let matchingKey = groupMetaKeys[0];
+                groupMeta[matchingKey].hidden = !groupMeta[matchingKey].hidden;
+            }
+        }
+
+        // handle filtering out type, if needed
+        if (type) {
+            let groupMetaKeys = Object.keys(groupMeta).filter(g => groupMeta[g].key == type);
+            if (groupMetaKeys.length == 1) {
                 let revisedSubset = {};
-                Object.keys(groupMeta).forEach(key => {
-                    if (subset[key] > 0) {
-                        revisedSubset[key] = subset[key];
-                    } else {
-                        groupMeta[key].include = false;
-                    }
+                Object.keys(groupMeta).filter(gmKey => !groupMeta[gmKey].hidden && !gmKey.startsWith('unnamed')).forEach(key => {
+                    revisedSubset[key] = subset[key];
                 })
                 subset = revisedSubset;
             }
+        }
 
-            // transforms object into array
-            let data_array = Object.entries(subset).map(([key, value]) => ({
-                    key: groupMeta[key].key,
-                    value: value,
-                    color: groupMeta[key].color
-            }));
-
-            // sort data_array in order of descending values
-            data_array.sort((a,b) => {
-                return (a.value >= b.value ? -1 : 1);
-            });
-    
-            // X axis
-            var x = d3.scaleBand()
-                .range([ 0, width ])
-                .domain(data_array.map( d => d.key ))
-                //.domain(data.map(function(d) { return d.Region; }))
-                //.domain(data_filt.map(function(d) { return d[0]; }))
-                //.domain(needed) // gets only the columns starting with 'all'
-                .padding(0.2);
-            svg.append("path")
-                .attr("d", d3.line()([[0,height + 0.5],[width,height + 0.5]]))
-                .attr("stroke", "black")
-                .attr("stroke-width", '1')
-                ;
-            /*
-            svg.append("g")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x))
-                .selectAll("text")
-                .attr("transform", "translate(-10,0)rotate(-45)")
-                .style("text-anchor", "end");
-            //*/
-    
-            // Add Y axis
-            var y = d3.scaleLinear()
-            .domain([0, d3.max(Object.values(subset))])
-            //.domain([0, 160000])
-            .range([ height, 0]);
-            svg.append("g")
-            .call(d3.axisLeft(y));
-    
-            // Bars
-            svg.selectAll("mybar")
-            .data(data_array)
-            .enter()
-            .append("rect")
-                .attr("x", function(d) { return x(d.key); } )
-                .attr("y", function(_d) { return y(0); } )
-                .attr("width", x.bandwidth())
-                .attr("height", _d => height - y(0))
-                .attr("fill", x  => x.color );
-
-            // Animation
-            svg.selectAll("rect")
-            .transition()
-            .duration(800)
-            .attr("y", function(d) { 
-                if (y(d.value) > 0.975 * height) {
-                    return y(d.value) - 3;
+        // filter out data if zero
+        if (Object.keys(subset).filter(key => subset[key] == 0).length > 0) {
+            let revisedSubset = {};
+            Object.keys(groupMeta).forEach(key => {
+                if (subset[key] > 0) {
+                    revisedSubset[key] = subset[key];
                 } else {
-                    return y(d.value);
+                    groupMeta[key].include = false;
                 }
             })
-            .attr("height", function(d) {
-                if (y(d.value) > 0.975 * height) {
-                    return 0.01 * height;
-                } else {
-                    return height - y(d.value);
-                }
-            })
-            .delay(function(_d,i){return(i*100)});
+            subset = revisedSubset;
+        }
 
-            // Values above bars
-            svg.selectAll("mybarvalues")
-            .data(data_array)
-            .enter()
-            .append("text")
-                .attr("x", d => x(d.key) + (x.bandwidth()/2) - (d.value.toString().length * 4) )
-                .attr("y", function(d) {
-                    if (y(d.value) > 0.975 * height) {
-                        return y(d.value) - 7.5;
-                    } else {
-                        return y(d.value) - 5;
-                    }
-                })
-                .attr("fill", "black" )
-                .text(d => d.value)
+        // transforms object into array
+        let data_array = Object.entries(subset).map(([key, value]) => ({
+                key: groupMeta[key].key,
+                value: value,
+                color: groupMeta[key].color
+        }));
+
+        // sort data_array in order of descending values
+        data_array.sort((a,b) => {
+            return (a.value >= b.value ? -1 : 1);
+        });
+
+        // X axis
+        var x = d3.scaleBand()
+            .range([ 0, width ])
+            .domain(data_array.map( d => d.key ))
+            //.domain(data.map(function(d) { return d.Region; }))
+            //.domain(data_filt.map(function(d) { return d[0]; }))
+            //.domain(needed) // gets only the columns starting with 'all'
+            .padding(0.2);
+        svg.append("path")
+            .attr("d", d3.line()([[0,height + 0.5],[width,height + 0.5]]))
+            .attr("stroke", "black")
+            .attr("stroke-width", '1')
             ;
+        /*
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end");
+        //*/
 
-            // Legend
-            drawLegend(svg, data_filt, region, subset, width, (_event, d) => { energy_type = d.key; console.log(d.key); removeBar(); drawBar(region, d.key); updateNationalDots(); });            
-        })    
+        // Add Y axis
+        var y = d3.scaleLinear()
+        .domain([0, d3.max(Object.values(subset))])
+        //.domain([0, 160000])
+        .range([ height, 0]);
+        svg.append("g")
+        .call(d3.axisLeft(y));
+
+        // Bars
+        svg.selectAll("mybar")
+        .data(data_array)
+        .enter()
+        .append("rect")
+            .attr("x", function(d) { return x(d.key); } )
+            .attr("y", function(_d) { return y(0); } )
+            .attr("width", x.bandwidth())
+            .attr("height", _d => height - y(0))
+            .attr("fill", x  => x.color );
+
+        // Animation
+        svg.selectAll("rect")
+        .transition()
+        .duration(800)
+        .attr("y", function(d) { 
+            if (y(d.value) > 0.975 * height) {
+                return y(d.value) - 3;
+            } else {
+                return y(d.value);
+            }
+        })
+        .attr("height", function(d) {
+            if (y(d.value) > 0.975 * height) {
+                return 0.01 * height;
+            } else {
+                return height - y(d.value);
+            }
+        })
+        .delay(function(_d,i){return(i*100)});
+
+        // Values above bars
+        svg.selectAll("mybarvalues")
+        .data(data_array)
+        .enter()
+        .append("text")
+            .attr("x", d => x(d.key) + (x.bandwidth()/2) - (d.value.toString().length * 4) )
+            .attr("y", function(d) {
+                if (y(d.value) > 0.975 * height) {
+                    return y(d.value) - 7.5;
+                } else {
+                    return y(d.value) - 5;
+                }
+            })
+            .attr("fill", "black" )
+            .text(d => d.value)
+        ;
+
+        // Legend
+        drawLegend(svg, data_filt, region, subset, width, (_event, d) => { energy_type = d.key; console.log(d.key); removeBar(); drawBar(region, d.key); updateNationalDots(); });
     }
 
     let drawLegend = (hook, source, region, subset, width, onclick) => {
