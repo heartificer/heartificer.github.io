@@ -1,7 +1,7 @@
 var width = 800;
 var height = 500;
 var selectedState = "National";
-var energy_type = "Actual"
+var energy_group = "Actual"
 
 
 document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
@@ -265,12 +265,12 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         potential.addEventListener('click', (e) => cbClick(e, region));
         const potentialText = document.querySelector('#potentialText');
         if (potential.checked){
-            console.log('drawing Potential energy')
-            energy_type = "Potential"
+            console.log('drawing Potential energy');
+            energy_group = "Potential";
             data_file = "resources/data/usretechnicalpotential_column_aggs.csv";
         } else {
-            console.log('drawing Actual energy')
-            energy_type = "Actual"
+            console.log('drawing Actual energy');
+            energy_group = "Actual";
             data_file = "resources/data/Power_Plants_state_and_natl_agg.csv";
         }
 
@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             .attr("y",  -55)
             .attr("font-weight", 700)
             .style("text-anchor", "middle")
-            .text(`${energy_type} Generation Capacity (GW)`)
+            .text(`${energy_group} Generation Capacity (GW)`)
         svg.append("text")      
             .attr("x", (width / 2) - 130 )
             .attr("y",  -35)
