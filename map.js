@@ -285,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         const potentialClone = potential.cloneNode(true);
         potential.parentNode.replaceChild(potentialClone, potential);
         potentialClone.addEventListener('click', (e) => cbClick(e, region));
-        
+
         const potentialText = document.querySelector('#potentialText');
         if (potential.checked){
             console.log('drawing Potential energy');
@@ -579,6 +579,7 @@ function tooltip_switch(e){
     tt.style.display = "block";
     nametext = document.getElementById("tooltip_name");
     nametext.innerHTML = msg;
+    nametext.style.backgroundColor = "black";
 }
 
 function tooltip_sleep()
