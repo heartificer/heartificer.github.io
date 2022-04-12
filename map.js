@@ -2,11 +2,11 @@ var width = 800;
 var height = 500;
 var selectedState = "National";
 var energy_group = "Actual"
+let energy_type = "";
 
+document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMContentLoaded" event */
 
-document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMContentLoaded" event */
-
-    const pathref = d3.geoPath();
+    const _pathref = d3.geoPath();
     const projection = d3.geoMercator();
     const pathgen = d3.geoPath().projection(projection);
 
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         return false;
     }
 
-    function cbClick(e, region)
+    function cbClick(_e, region)
     {
         removeBar();
         drawBar(region)
@@ -145,8 +145,26 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         })*/
     };
 
+    const updateNationalDots = () => {
+        removeDots();
+        drawNationalDots();
+    }
+
+    const removeDots = () => {        
+        var svg = d3.select("#map")
+        svg.selectAll('.plantcircle').remove();
+    }
+
     function drawNationalDots(){
         d3.json("resources/data/plants.json").then((data) =>{
+            // pull out distinct types
+            let distinctTypes = [...new Set(data.map(d => d.type))];
+            // identify which ones groupMeta has identified as being hidden
+            let hiddenTypes = Object.keys(groupMeta).filter(gmKey => !gmKey.startsWith('unnamed') && groupMeta[gmKey].hidden);
+            // identify the remaining types
+            let retainedTypes = distinctTypes.filter(type => hiddenTypes.indexOf(type)<0);
+            // filter data
+            data = data.filter(d => retainedTypes.indexOf(d.type)>=0);
 
             var svg = d3.select("#map svg g");
             svg.selectAll(".m")
@@ -205,8 +223,6 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         tt.style.top = e.pageY + "px";
         tt.style.display = "inline-block";
     }
-
-
     
     //Zoom Setup
     let zoomf = d3.zoom().on('zoom', handleZoom);
@@ -258,6 +274,8 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                     .append("g")
                         .attr("transform",
                             "translate(" + margin.left + "," + margin.top + ")");
+
+        // store the type in the glob
         
         // check to see what type (actual or potential) of chart to draw
         // get the data
@@ -479,7 +497,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             ;
 
             // Legend
-            drawLegend(svg, data_filt, region, subset, width, (_event, d) => { removeBar(); drawBar(region, d.key); });            
+            drawLegend(svg, data_filt, region, subset, width, (_event, d) => { energy_type = d.key; console.log(d.key); removeBar(); drawBar(region, d.key); updateNationalDots(); });            
         })    
     }
 
