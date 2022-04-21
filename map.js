@@ -11,12 +11,12 @@ regionalRadius = 0.15;
 
 document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMContentLoaded" event */
     const scaler =  document.querySelector('#scaleCheckbox')
+    saver = scaler;
     const _pathref = d3.geoPath();
     const projection = d3.geoMercator();
     const pathgen = d3.geoPath().projection(projection);
 
     var mapdata;
-    saver = pathgen;
 
     // add on-click
     d3.select("#map").on("click", (e) => {
@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
     function ddClick(e)
     {
         state = e.target.attributes.data.value;
-        console.log(state + " dropdown clicked!");
         selectedState = state;
         if (state == "National") {
             drawNational();
@@ -122,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                     else
                     {
                         var t = "translate(-725,-450) scale(5)";
-                        selectedState = "";
+                        selectedState = "National";
                     }
 
                     g.transition().duration(1000).attr("transform", t);
@@ -139,43 +138,32 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                         drawNational();
                     }
 
-                    //Handle if dots have tooltips
-                    if (selectedState == ""){
-                        elems = document.getElementsByClassName("plantcircle");
-                        for (var i = 0; i < elems.length; i++){
-                            elems[i].style.pointerEvents = "none";
-                        }
-                        //document.getElementsByClassName("plantcircle").style("pointer-events", "none");
-                    }else{
-                        elems = document.getElementsByClassName("plantcircle");
-                        for (var i = 0; i < elems.length; i++){
-                            elems[i].style.pointerEvents = "all";
-                        }
-                        //document.getElementsByClassName("plantcircle").style("pointer-events", "all");
-                    }
+
                 })
             
             drawNational();
             drawNationalDots();
         });
-        /*
-        d3.csv('resources/data/usretechnicalpotential_national.csv').then(data => {
-            energydata = data
-            console.log(data)
-            const paths = svg.selectAll("path").data(data);
-            paths.enter()
-
-                .on("click", function(d) {
-                    
-                })
-                
-                
-        })*/
     };
 
     const updateNationalDots = () => {
         removeDots();
         drawNationalDots();
+    }
+    
+    function setDotsMouseEvents(){
+        //Handle if dots have tooltips
+        if (selectedState == "National"){
+            elems = document.getElementsByClassName("plantcircle");
+            for (var i = 0; i < elems.length; i++){
+                elems[i].style.pointerEvents = "none";
+            }
+        }else{
+            elems = document.getElementsByClassName("plantcircle");
+            for (var i = 0; i < elems.length; i++){
+                elems[i].style.pointerEvents = "all";
+            }
+        }
     }
 
     const removeDots = () => {        
@@ -195,7 +183,6 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
             data = data.filter(d => retainedTypes.indexOf(d.type)>=0);
 
             scaling = scaler.checked;
-            console.log(scaling);
             var svg = d3.select("#map svg g");
             svg.selectAll(".m")
             .data(data)
@@ -203,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
             .append("circle")
             .attr("class", "plantcircle")
             .attr("data", (d) => {return d.name + ", " + groupMeta[d.type].key + " (" + d.mw + "MW)";})
+            .attr("r", 0)
             .attr("r", (d) => { return scalingDots ? circleSizeF(d.mw, 7100, 0) : sourceRadius;})
             .style("stroke", 'black')
             .attr("stroke-width", '.05')
@@ -211,8 +199,30 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
             .attr("transform", (d) => {
                 let p = projection([d.long,d.lat]);
                 return `translate(${p[0]}, ${p[1]})`;
+            })
+            .on("mousemove", function(e, d) {
+                d3.select(this)
+                    .attr('stroke-width', '0.1');
+                    sourceTooltip(e);
+              })
+            .on("mouseleave", function(d) {
+                d3.select(this)
+                    .attr('stroke-width', '0.05');
+                    tooltip_sleep();
             });
+            setDotsMouseEvents();
         });
+        
+    }
+
+    function sourceTooltip(e){
+        
+        tt = document.getElementById("tooltip");
+        nametext = document.getElementById("tooltip_name");
+        nametext.innerHTML = tttext = e.srcElement.attributes.data.nodeValue;
+        tt.style.left = e.pageX + "px";
+        tt.style.top = e.pageY + "px";
+        tt.style.display = "inline-block";
     }
 
     function circleSizeF(val, max, min){
@@ -226,43 +236,27 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         zoomNational();
         removeBar();
         drawBar("National");
+        setDotsMouseEvents();
     }
 
     function drawRegional(region){  
         sourceRadius = regionalRadius;
-        console.log(region);          
         zoomToState(region);
         removeBar();
         drawBar(region);
+        setDotsMouseEvents();
     }
 
     function updateNationalDotSizes(){
-        console.log(sourceRadius);
-        svg = d3.select("svg");
-        g = d3.select("svg g");
-        var circle = g.selectAll('circle')
-            .transition()
-                .attr('r', sourceRadius);
+        if(!scalingDots){
+            svg = d3.select("svg");
+            g = d3.select("svg g");
+            var circle = g.selectAll('circle')
+                .transition()
+                    .attr('r', sourceRadius);
+        }
     }
     
-    // function zoomFit(paddingPercent, transitionDuration) 
-    // {
-    //     svg = d3.select("svg");
-    //     g = d3.select("svg g");
-    //     bb = g.node().getBBox();
-    //     widthv = bb.width;
-    //     heightv = bb.height;
-    //     console.log(g.node().getBBox());
-    //     if (widthv && heightv){
-    //         //TODO: This is janky. Need a more robust method. -AMH (It's also my fault)
-    //         scale = 4;
-    //         zoomf.scaleTo(svg, scale);
-    //         zoomf.translateTo(svg, widthv * 1.45, heightv * 1.65);
-    //     }
-    // }
-
-    // let zoomf = d3.zoom().on('zoom', handleZoom);
-
     function tooltip_wake(e, d)
     {
         tt = document.getElementById("tooltip");
@@ -284,13 +278,10 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
     function handleZoom(e) {
             d3.select('svg g')
             .attr('transform', e.transform);
-            console.log(e.transform);
     }
 
     function zoomToState(s){
-        if(!scalingDots){
-            updateNationalDotSizes();
-        }
+        updateNationalDotSizes();
         st = d3.select("#state_" + s.replace(/\s/g, ''));
         const bounds = st.node().getBBox();
         const x0 = bounds.x;
@@ -306,11 +297,8 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
     function zoomNational(){
         zoomTo(-725, -450, 5);
-        selectedState = "";
-        console.log(scalingDots);
-        if(!scalingDots){
-            updateNationalDotSizes();
-        }
+        selectedState = "National";
+        updateNationalDotSizes();
     }
 
     var removeBar = function(){
@@ -344,11 +332,9 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
         const potentialText = document.querySelector('#potentialText');
         if (potential.checked){
-            console.log('drawing Potential energy');
             energy_group = "Potential";
             data_file = "resources/data/usretechnicalpotential_column_aggs.csv";
         } else {
-            console.log('drawing Actual energy');
             energy_group = "Actual";
             data_file = "resources/data/Power_Plants_state_and_natl_agg.csv";
         }
@@ -376,28 +362,16 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
             .on("click", () => { drawNational() })
         ;
 
-        /*
-        
-        tt = document.getElementById("tooltip");
-        nametext = document.getElementById("tooltip_name");
-        nametext.innerHTML = d.properties["NAME"];
-        tt.style.left = e.pageX + "px";
-        tt.style.top = e.pageY + "px";
-        tt.style.display = "block";
-        //*/
-
         let data = []
         if (energy_group_data[energy_group]) {
             await d3.csv(data_file, d3.autoType).then(d => energy_group_data[energy_group] = d);
         }
         data = d = energy_group_data[energy_group];
-        //console.log(data);
         
         var needed = data.columns.slice(-7);
         let correctedRgion = region == "DistrictofColumbia" ? "District of Columbia" : region;
 
         var data_filt = data.filter(function(dd){return dd.Region == correctedRgion});
-        console.log(data_filt)
 
         // get multiple key values
         let subset = ((
