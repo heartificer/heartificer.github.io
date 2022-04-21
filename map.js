@@ -4,9 +4,13 @@ var selectedState = "National";
 var energy_group = "Actual"
 let energy_type = "";
 let energy_group_data = {Actual:{}, Potential:{}};
+scalingDots = false;
+sourceRadius = 0;
+nationalRadius = 0.3;
+regionalRadius = 0.15;
 
 document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMContentLoaded" event */
-
+    const scaler =  document.querySelector('#scaleCheckbox')
     const _pathref = d3.geoPath();
     const projection = d3.geoMercator();
     const pathgen = d3.geoPath().projection(projection);
@@ -41,7 +45,15 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         drawBar(region)
     }
 
+    function scbClick(_e){
+        scalingDots = !scalingDots;
+        updateNationalDots();
+    }
+
     var drawMap = function(){
+        const scalerClone = scaler.cloneNode(true);
+        scaler.parentNode.replaceChild(scalerClone, scaler);
+        scalerClone.addEventListener('click', (e) => scbClick(e));
         var svg = d3.select("#map")
             .append("svg")
             .attr("height", height)
@@ -126,6 +138,21 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                     } else {
                         drawNational();
                     }
+
+                    //Handle if dots have tooltips
+                    if (selectedState == ""){
+                        elems = document.getElementsByClassName("plantcircle");
+                        for (var i = 0; i < elems.length; i++){
+                            elems[i].style.pointerEvents = "none";
+                        }
+                        //document.getElementsByClassName("plantcircle").style("pointer-events", "none");
+                    }else{
+                        elems = document.getElementsByClassName("plantcircle");
+                        for (var i = 0; i < elems.length; i++){
+                            elems[i].style.pointerEvents = "all";
+                        }
+                        //document.getElementsByClassName("plantcircle").style("pointer-events", "all");
+                    }
                 })
             
             drawNational();
@@ -167,16 +194,20 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
             // filter data
             data = data.filter(d => retainedTypes.indexOf(d.type)>=0);
 
+            scaling = scaler.checked;
+            console.log(scaling);
             var svg = d3.select("#map svg g");
             svg.selectAll(".m")
             .data(data)
             .enter()
             .append("circle")
             .attr("class", "plantcircle")
-            .attr("r", .25)
+            .attr("data", (d) => {return d.name + ", " + groupMeta[d.type].key + " (" + d.mw + "MW)";})
+            .attr("r", (d) => { return scalingDots ? circleSizeF(d.mw, 7100, 0) : sourceRadius;})
             .style("stroke", 'black')
             .attr("stroke-width", '.05')
             .style("fill", (d) => { try{ return groupMeta[d.type].color; }catch{console.log(d.type);}})
+            .style("opacity", 0.75)
             .attr("transform", (d) => {
                 let p = projection([d.long,d.lat]);
                 return `translate(${p[0]}, ${p[1]})`;
@@ -184,17 +215,34 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         });
     }
 
+    function circleSizeF(val, max, min){
+        //return Math.max(0, Math.min(val, 7100));
+        val = Math.max(val, 100);
+        return ((val - min)/(max - min))*5;
+    }
+
     function drawNational(){
+        sourceRadius = nationalRadius;
         zoomNational();
         removeBar();
         drawBar("National");
     }
 
     function drawRegional(region){  
+        sourceRadius = regionalRadius;
         console.log(region);          
         zoomToState(region);
         removeBar();
         drawBar(region);
+    }
+
+    function updateNationalDotSizes(){
+        console.log(sourceRadius);
+        svg = d3.select("svg");
+        g = d3.select("svg g");
+        var circle = g.selectAll('circle')
+            .transition()
+                .attr('r', sourceRadius);
     }
     
     // function zoomFit(paddingPercent, transitionDuration) 
@@ -240,6 +288,9 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
     }
 
     function zoomToState(s){
+        if(!scalingDots){
+            updateNationalDotSizes();
+        }
         st = d3.select("#state_" + s.replace(/\s/g, ''));
         const bounds = st.node().getBBox();
         const x0 = bounds.x;
@@ -250,11 +301,16 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         var t = "translate(" + (width / 2) + "," + (height / 2) + ") scale(" + (1 / Math.max((x1 - x0) / width, (y1 - y0) / height)) + ") translate(" + (-(x0 + x1) / 2) + "," + (-(y0 + y1) / 2) + ")";
         var g = d3.select("svg g");
         g.transition().duration(1000).attr("transform", t);
+        
     }
 
     function zoomNational(){
         zoomTo(-725, -450, 5);
         selectedState = "";
+        console.log(scalingDots);
+        if(!scalingDots){
+            updateNationalDotSizes();
+        }
     }
 
     var removeBar = function(){
