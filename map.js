@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
             .enter()
             .append("circle")
             .attr("class", "plantcircle")
-            .attr("data", (d) => {return d.name + ", " + groupMeta[d.type].key + " (" + d.mw + "MW)";})
+            .attr("data", (d) => {return d.name + "<br>" + groupMeta[d.type].key + " (" + d.mw + "MW)";})
             .attr("r", 0)
             .attr("r", (d) => { return scalingDots ? circleSizeF(d.mw, 7100, 0) : sourceRadius;})
             .style("stroke", 'black')
