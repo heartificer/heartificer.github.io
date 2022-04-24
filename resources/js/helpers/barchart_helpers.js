@@ -60,8 +60,8 @@ let groupMeta = {
         color: '#c49c94',
         hidden: false 
     },
-    "unnamed06": {
-        key: "unnamed06",
+    "hydropowerPS_GW": {
+        key: "Hydro Pumped Storage",
         color: '#e377c2',
         hidden: false 
     },

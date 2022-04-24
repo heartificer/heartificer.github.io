@@ -368,7 +368,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         }
         data = d = energy_group_data[energy_group];
         
-        var needed = data.columns.slice(-7);
+        //var needed = data.columns.slice(-7);
         let correctedRgion = region == "DistrictofColumbia" ? "District of Columbia" : region;
 
         var data_filt = data.filter(function(dd){return dd.Region == correctedRgion});
