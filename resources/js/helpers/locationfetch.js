@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         document.querySelector("#fetchLocation").addEventListener('click', getMeatspacePosition);
     }
     //*/
-    getMeatspacePosition();
+    //getMeatspacePosition();
 
 
   } /* cease "DOMContentLoaded" event */

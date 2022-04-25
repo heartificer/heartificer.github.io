@@ -25,6 +25,14 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             return {
                 weeklyHistories: [
                     {
+                        when: 'April Week 03',
+                        actions: [
+                            { who: 'Sarah', what: 'updated vis handling of "actua" data set'},
+                            { who: 'Aaron', what: 'added faq, updated tooltips and light refactor of backing javascript for vis'},
+                            { who: 'Jason', what: 'refactoring'},
+                        ]
+                    },
+                    {
                         when: 'April Week 02',
                         actions: [
                             { who: 'Sarah', what: 'toggle bar chart between actual and potential'},
