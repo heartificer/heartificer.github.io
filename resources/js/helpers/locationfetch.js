@@ -6,9 +6,9 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         locationDetails.href = '';
         locationDetails.textContent = '';
         if (!navigator.geolocation) {
-            //statusDetails.textContent = 'Geolocation is not supported by your browser';
+            statusDetails.textContent = 'Geolocation is not supported by your browser';
         } else {
-            //statusDetails.textContent = 'Locating …';
+            statusDetails.textContent = 'Locating …';
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     // success method
@@ -45,13 +45,13 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                                 }
                             });
                             let userState = stateDistances[0].name;
-                            //statusDetails.textContent = `Are you roughly here: ${userState} ?`;
+                            statusDetails.textContent = `Are you roughly here: ${userState} ?`;
                         }
                     })
                 },
                 () => {
                     // error / failure method
-                    //statusDetails.textContent = 'Unable to retrieve your location';
+                    statusDetails.textContent = 'Unable to retrieve your location';
                 }
             );
         }
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         document.querySelector("#fetchLocation").addEventListener('click', getMeatspacePosition);
     }
     //*/
-    getMeatspacePosition();
+    //getMeatspacePosition();
 
 
   } /* cease "DOMContentLoaded" event */
