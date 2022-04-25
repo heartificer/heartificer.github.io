@@ -387,7 +387,8 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                 naturalGas_GW,
                 other_GW,
                 petroleum_GW,
-                nuclear_GW
+                nuclear_GW,
+                hydropowerPS_GW
             }
         ) => (
             {
@@ -402,7 +403,8 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                 naturalGas_GW,
                 other_GW,
                 petroleum_GW,
-                nuclear_GW
+                nuclear_GW,
+                hydropowerPS_GW
             }
         ))(data_filt[0]);
         Object.keys(subset).forEach(key => subset[key] = !subset[key] ? 0 : subset[key]);
