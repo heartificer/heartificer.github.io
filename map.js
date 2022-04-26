@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
     var drawBar = async function(region, type){
         var margin = {top: 90, right: 20, bottom: 15, left: 75},
         width = 600 - margin.left - margin.right,
-        height = 493.5 - margin.top - margin.bottom;
+        height = 493.1 - margin.top - margin.bottom;
     
         // add bar chart to the chart div
         var svg = d3.select("#chart")
