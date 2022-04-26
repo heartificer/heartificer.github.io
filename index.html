@@ -51,32 +51,33 @@
             <div id="chart" style="display: inline-block;"></div>
             
             <div id="options" class="row justify-content-end">
-              <div class="col-2">
+              <div class="col-4">
                 <label class="form-check-label" for="flexSwitchCheckChecked" id="scaleText">Scale Sources by MW</label>
               </div>
-              <div class="col-1 form-check form-switch">
+              <div class="col-3 form-check form-switch" style="position: relative; left: -10em;">
                 <div style="display: inline-block; position: relative; left: -3em;">
-                  off
+                  Off
                 </div>
                 <div style="display: inline-block; position: relative; top: 0.2em;">
                   <input class="form-check-input" type="checkbox" id="scaleCheckbox" unchecked>
                 </div>
                 <div style="display: inline-block;">
-                  on
+                  On
                 </div>
               </div>
-
-              <div class="col-4"></div>
-
-              <div class="col-2">
-                <label class="form-check-label" for="flexSwitchCheckUnchecked" id="potentialText">Actual Energy Mode</label>
+              <div class="col-3" style="position: relative; left: -1.5em;">
+                <label class="form-check-label" for="flexSwitchCheckUnchecked" id="potentialText">Energy Type by Mode</label>
               </div>
-              <div class="col-1 form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="potentialCheckbox" unchecked>
-                <!--onmouseenter="tooltip_switch(event)" onmouseleave="tooltip_sleep()"-->
-              </div>
-              <div class="col-2">
-                <label class="form-check-label" for="flexSwitchCheckChecked" id="potentialText">Potential Energy Mode</label>
+              <div class="col-2 form-check form-switch" style="position: relative; left: -5em;">
+                <div style="display: inline-block; position: relative; left: -3em;">
+                  Actual
+                </div>
+                <div style="display: inline-block; position: relative; top: 0.2em;">
+                  <input class="form-check-input" type="checkbox" id="potentialCheckbox" unchecked>
+                </div>
+                <div style="display: inline-block;">
+                  Potential
+                </div>
               </div>
             </div>
             <div id="tooltip">
