@@ -26,8 +26,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         }
      });
 
-    function ddClick(e)
-    {
+    function ddClick(e) {
         state = e.target.attributes.data.value;
         selectedState = state;
         if (state == "National") {
