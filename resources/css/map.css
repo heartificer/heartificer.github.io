@@ -3,7 +3,7 @@ path{
 }
 
 svg{
-    background-color: lightblue;
+    background-color: rgb(255, 255, 255);
 }
 
 #tooltip
@@ -50,26 +50,32 @@ svg{
 {
     display: inline-block;
     position: relative;
-    margin-top: 25px; /* nudged this map down so it aligns with the bar chart*/
+    
+    border-right: 1px solid black;
 }
 
 #chart
 {
     position:sticky;
     display:inline-block;
-    border: 1px solid black;
     margin: auto;
     vertical-align: top;
     word-wrap:break-word;
     max-width: 600px;
     min-width: 600px; /* make this the same width as the bar chart for improved presentation */
-    margin-top: 25px;
+    
+}
+
+#contentBorder{
+    border: 1px solid black;
+    margin: -5px;
+    margin-top:20px;
 }
 
 #map svg
 {
     fill: red;
-    border:1px solid black;
+    
 }
 
 #stateSelector
