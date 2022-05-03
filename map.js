@@ -538,9 +538,9 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
         // Table (If in Actual Mode)
         var svgTable = d3.select("#summary")
-                        .append("div")
         //svgTable.transform(translate(width/2))
         if (! potential.checked) { 
+            svgTable.selectAll('*').remove();
             makeTable(svgTable, data_filt, region, subset, width, table_details(svgTable, energy_type) ) 
         }
 
@@ -611,7 +611,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
     // create a table with metrics
     let makeTable = (hook, source, region, subset, width, onclick) => {
-        remove_table();
+        hook = hook.append('div')
 
         // scope the source and add meta
         console.log(source)
@@ -767,8 +767,8 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         // show a more detailed table
     }
 
-    var remove_table = function(){
-        var table_div = d3.select("#summary").select("div")
+    var remove_table = function(hook){
+        var table_div = d3.select(hook).select('#div')
         table_div.selectAll('*').remove();
     }
 
