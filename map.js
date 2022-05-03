@@ -333,6 +333,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         if (potential.checked){
             energy_group = "Potential";
             data_file = "resources/data/usretechnicalpotential_column_aggs.csv";
+            remove_table();
         } else {
             energy_group = "Actual";
             data_file = "resources/data/Power_Plants_state_and_natl_agg.csv";
@@ -534,6 +535,15 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
         // Legend
         drawLegend(svg, data_filt, region, subset, width, (_event, d) => { energy_type = d.key; console.log(d.key); removeBar(); drawBar(region, d.key); updateNationalDots(); });
+
+        // Table (If in Actual Mode)
+        var svgTable = d3.select("#summary")
+                        .append("div")
+        //svgTable.transform(translate(width/2))
+        if (! potential.checked) { 
+            makeTable(svgTable, data_filt, region, subset, width, table_details(svgTable, energy_type) ) 
+        }
+
     }
 
     let drawLegend = (hook, source, region, subset, width, onclick) => {
@@ -596,7 +606,170 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                     .style('fill', x => x.hidden ? 'black' : 'white')
                     .text((_x,i) => groups[i].key)
                     .on("click", onclick);
-        //*/
+        
+    }
+
+    // create a table with metrics
+    let makeTable = (hook, source, region, subset, width, onclick) => {
+        remove_table();
+
+        // scope the source and add meta
+        console.log(source)
+        let groups = Object.keys(source[0])
+                           .filter(f => f.endsWith("_GW"))
+                           .map(group => {
+                            let match = groupMeta[group];
+                            match.include = region == "" || region == "National" ? true : !!subset[group];
+                            return match;
+                        });
+
+        // sort energy types
+        groups.sort((a,b) => { return a.key.localeCompare(b.key); });
+        console.log(groups)
+
+        // instantiates the legend object
+        var table = hook.append("table");
+        table.style()
+
+        //adds the header row to the table
+        // had to do some tricks to get metric to be the first item
+        // without losing biopower
+        var header = table.append("thead").append("tr");
+        //var header_groups = groups.unshift({'key': 'metric', 'color': "white"})
+        //header.append("th").text("metric");
+        header
+            .selectAll("th")
+            .data(groups)
+            .enter()
+                .append("th")
+                    //.attr("cursor", "pointer")
+                    .text((_x,i) => groups[i].key)
+                    .style('background-color', x => x.color);
+                    //.on("click", onclick);
+        //header.append("th").text(groups[groups.length].key);
+
+        var tablebody = table.append("tbody");
+        /*    rows = tablebody
+                    .selectAll("tr")
+                    .data([''])
+                    //.data(["count", "minimum size (GW)", "maximum size (GW)", "average size (GW)"])
+                    .enter()
+                        .append("tr")
+                        .style('background-color', 'white')
+                        .text(function(d) { return d; });*/
+
+        
+        var column_prefixes = Object.keys(subset).filter(f => ! f.startsWith("un")).sort()
+        var column_suffixes = ["_count", "_min", "_max", "_mean"]
+        /*var data_array = [{'name': 'metric',
+                        'count': 'count',
+                        'min': 'minimum size (GW)',
+                        'max': 'maximum size (GW)',
+                        'mean': 'averages ize (GW)'
+                        }]*/
+        var data_array = []
+        for(var i = 0; i < column_suffixes.length; i++) {
+                //data_array[i] = [column_suffixes[i]]
+                data_array[i] = []
+                for (var k = 0; k < column_prefixes.length ; k++ ){
+                    data_array[i][k] = source[0][column_prefixes[k]+column_suffixes[i]]
+                }
+        }
+        console.log(data_array)
+
+        tablebody. selectAll("tr").
+        //data([[1],[2],[3],[4]]).
+        data(data_array).
+        enter().
+        append("tr").
+        selectAll("td").
+        data(function (row, i) {
+            return row;
+        }).
+        enter().
+        append("td").
+        attr("class", "small").
+        text(function (d) {
+            return d;
+        });
+
+        /*cells = rows.selectAll("td")
+            //.data([data_array, data_array, data_array, data_array])
+            .data(data_array)
+            .enter()
+                .append("td")
+                .text(function(d) {
+                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
+                    //source[0][d+"_max"], source[0][d+"_mean"];
+                    //return source[0][d+"_count"]
+                    return d;
+                })
+                //.style('background-color', d => groupMeta[d.name] == undefined ?  "white" : groupMeta[d.name].color)
+                .append("td")
+                .text(function(d) {
+                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
+                    //source[0][d+"_max"], source[0][d+"_mean"];
+                    //return source[0][d+"_count"]
+                    return d.min;
+                })
+                
+                .append("td")
+                .text(function(d) {
+                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
+                    //source[0][d+"_max"], source[0][d+"_mean"];
+                    //return source[0][d+"_count"]
+                    return d.max;
+                })
+                
+                .append("td")
+                .text(function(d) {
+                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
+                    //source[0][d+"_max"], source[0][d+"_mean"];
+                    //return source[0][d+"_count"]
+                    return d.mean;
+                })
+                */
+                
+
+        
+
+        /* adds the legend energy selection bars
+        hook.selectAll("legend_bar_field")
+            .data(groups)
+            .enter()
+                .append("rect")
+                    .attr("width", 207 )
+                    .attr("height", 23 )
+                    .attr("x", width - 213 )
+                    .attr("y", (_x,i) => -45 + 26 * i )
+                    .style('fill', x => x.include && !x.hidden ? x.color : 'white')
+                    .attr("stroke", 'black')
+                    .attr("stroke-width", '1')
+                    .attr("cursor", "pointer")
+                    //.on("click", onclick);
+
+        // adds the labels for the energy selection bars
+        hook.selectAll("legend_bar_text")
+            .data(groups)
+            .enter()
+                .append("text")
+                    .attr("x", width - 205 )
+                    .attr("y", (_x,i) => -29 + 26 * i )
+                    .attr("cursor", "pointer")
+                    .style('fill', x => x.hidden ? 'black' : 'white')
+                    .text((_x,i) => groups[i].key)
+                    .on("click", onclick);
+                */
+
+    }
+
+    var table_details = function(hook, energy_type){
+        // show a more detailed table
+    }
+
+    var remove_table = function(){
+        var table_div = d3.select("#summary").select("div")
+        table_div.selectAll('*').remove();
     }
 
     drawMap();

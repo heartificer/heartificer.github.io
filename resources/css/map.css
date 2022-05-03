@@ -118,3 +118,21 @@ svg{
 {
     border:1px solid black;
 }
+
+table {
+    border-collapse: separate;
+  }
+  
+  th {
+    color: black;
+  }
+  
+  th,
+  td {
+    width: 100px;
+    text-align: center;
+    border: 1px solid black;
+    padding: 5px;
+    color: black;
+  }
+  
