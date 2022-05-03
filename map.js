@@ -341,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
         // add a title to the bar chart
         svg.append("text")      
-            .attr("x", (width / 2) - 130 )
+            .attr("x", (width / 2) - 140 )
             .attr("y",  -55)
             .attr("font-weight", 700)
             .style("text-anchor", "middle")
@@ -560,53 +560,67 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         // sort energy types
         groups.sort((a,b) => { return a.key.localeCompare(b.key); });
 
-        // instantiates the legend object
+        // legend object
         var legend = hook.append("g");
 
-        // adds the container
+        // legend container
         legend.append("rect")
-            .attr("width", 230 )
+            .attr("width", 230 + 10 + 25 )
             .attr("height", groups.length * 26 + 42 )
-            .attr("x", width - 225 )
+            .attr("x", width - 225 - 20 )
             .attr("y",  -78 )
             .attr("fill", 'white')
             .attr("stroke", 'black')
             .attr("stroke-width", '1');
 
-        // adds a legend label
+        // legend title
         legend.append('text')
-            .attr("x", width - 205 )
+            .attr("x", width - 205 + 40 )
             .attr("y",  -55)
             .attr("font-weight", 500)
             .text("Energy Types");
 
-        // adds the legend energy selection bars
+        // legend check-box
         hook.selectAll("legend_bar_field")
             .data(groups)
             .enter()
                 .append("rect")
-                    .attr("width", 207 )
+                    .attr("width", 23 )
                     .attr("height", 23 )
-                    .attr("x", width - 213 )
+                    .attr("x", width - 213 - 2 - 20 )
                     .attr("y", (_x,i) => -45 + 26 * i )
+                    .attr("stroke", x => x.include ? 'black' : 'white')
+                    .attr("stroke-width", '1')
                     .style('fill', x => x.include && !x.hidden ? x.color : 'white')
+                    .attr("cursor", "pointer")
+                    .on("click", onclick);
+
+        // legend bars
+        hook.selectAll("legend_bar_field")
+            .data(groups)
+            .enter()
+                .append("rect")
+                    .attr("width", 207 - 32 + 40 )
+                    .attr("height", 23 )
+                    .attr("x", width - 213 + 32 - 5 - 20 )
+                    .attr("y", (_x,i) => -45 + 26 * i )
+                    .style('fill', x => x.color)
                     .attr("stroke", 'black')
                     .attr("stroke-width", '1')
                     .attr("cursor", "pointer")
                     .on("click", onclick);
 
-        // adds the labels for the energy selection bars
+        // legend bars text
         hook.selectAll("legend_bar_text")
             .data(groups)
             .enter()
                 .append("text")
-                    .attr("x", width - 205 )
+                    .attr("x", width - 205 + 37 - 5 - 25 )
                     .attr("y", (_x,i) => -29 + 26 * i )
                     .attr("cursor", "pointer")
-                    .style('fill', x => x.hidden ? 'black' : 'white')
+                    .style('fill', x => x.include && x.hidden ? 'black' : 'white')
                     .text((_x,i) => groups[i].key)
-                    .on("click", onclick);
-        
+                    .on("click", onclick);        
     }
 
     // create a table with metrics
