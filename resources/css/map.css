@@ -125,6 +125,7 @@ table {
   
   th {
     color: black;
+    cursor: pointer;
   }
   
   th,

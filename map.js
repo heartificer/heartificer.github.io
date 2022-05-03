@@ -521,7 +521,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         .data(data_array)
         .enter()
         .append("text")
-            .attr("x", d => x(d.key) + (x.bandwidth()/2) - (d.value.toString().length * 4) )
+            .attr("x", d => x(d.key) + (x.bandwidth()/2) - (Math.round(d.value).toString().length * 4) )
             .attr("y", function(d) {
                 if (y(d.value) > 0.975 * height) {
                     return y(d.value) - 7.5;
@@ -530,7 +530,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                 }
             })
             .attr("fill", "black" )
-            .text(d => d.value)
+            .text(d => d.value < 1 ? "<1" : Math.round(d.value))
         ;
 
         // Legend
@@ -541,7 +541,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         //svgTable.transform(translate(width/2))
         if (! potential.checked) { 
             svgTable.selectAll('*').remove();
-            makeTable(svgTable, data_filt, region, subset, width, table_details(svgTable, energy_type) ) 
+            makeTable(svgTable, data_filt, region, subset, width, table_details(energy_type) ) 
         }
 
     }
@@ -612,10 +612,11 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
     // create a table with metrics
     let makeTable = (hook, source, region, subset, width, onclick) => {
         hook = hook.append('div')
+        hook.select('div').style('align', 'center')
+        //console.log(subset)
 
         // scope the source and add meta
-        console.log(source)
-        let groups = Object.keys(source[0])
+        let groups = Object.keys(subset)
                            .filter(f => f.endsWith("_GW"))
                            .map(group => {
                             let match = groupMeta[group];
@@ -625,57 +626,45 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
         // sort energy types
         groups.sort((a,b) => { return a.key.localeCompare(b.key); });
-        console.log(groups)
+        //console.log(group)
 
         // instantiates the legend object
         var table = hook.append("table");
         table.style()
 
         //adds the header row to the table
-        // had to do some tricks to get metric to be the first item
-        // without losing biopower
+        // had to modify to get metric to be the first item
         var header = table.append("thead").append("tr");
-        //var header_groups = groups.unshift({'key': 'metric', 'color': "white"})
-        //header.append("th").text("metric");
+        var header_groups = groups
+        header_groups.unshift({key:'Metric', color:'white'})
+
         header
             .selectAll("th")
-            .data(groups)
+            .data(header_groups)
             .enter()
                 .append("th")
-                    //.attr("cursor", "pointer")
-                    .text((_x,i) => groups[i].key)
-                    .style('background-color', x => x.color);
+                    .text((_x,i) => header_groups[i].key)
+                    .style('background-color', x => x.color)
                     //.on("click", onclick);
-        //header.append("th").text(groups[groups.length].key);
+
 
         var tablebody = table.append("tbody");
-        /*    rows = tablebody
-                    .selectAll("tr")
-                    .data([''])
-                    //.data(["count", "minimum size (GW)", "maximum size (GW)", "average size (GW)"])
-                    .enter()
-                        .append("tr")
-                        .style('background-color', 'white')
-                        .text(function(d) { return d; });*/
-
         
         var column_prefixes = Object.keys(subset).filter(f => ! f.startsWith("un")).sort()
-        var column_suffixes = ["_count", "_min", "_max", "_mean"]
-        /*var data_array = [{'name': 'metric',
-                        'count': 'count',
-                        'min': 'minimum size (GW)',
-                        'max': 'maximum size (GW)',
-                        'mean': 'averages ize (GW)'
-                        }]*/
+        var column_suffixes = [['Number of Plants', '_count'], ['Minimum Size (MW)', '_min'], 
+                                ['Maximum Size (MW)', '_max'], ['Average Size (MW)','_mean']]
         var data_array = []
         for(var i = 0; i < column_suffixes.length; i++) {
-                //data_array[i] = [column_suffixes[i]]
-                data_array[i] = []
+                data_array[i] = [column_suffixes[i][0]]
                 for (var k = 0; k < column_prefixes.length ; k++ ){
-                    data_array[i][k] = source[0][column_prefixes[k]+column_suffixes[i]]
+                    if (i == 0){ // don't multiple sount by 1000
+                        data_array[i][k+1] = source[0][column_prefixes[k]+column_suffixes[i][1]]
+                    } else { // put GW scale values back in MW, too manythings are 0 in GW
+                        data_array[i][k+1] = Math.round(source[0][column_prefixes[k]+column_suffixes[i][1]]*1000)
+                    }
+                    
                 }
         }
-        console.log(data_array)
 
         tablebody. selectAll("tr").
         //data([[1],[2],[3],[4]]).
@@ -693,73 +682,6 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
             return d;
         });
 
-        /*cells = rows.selectAll("td")
-            //.data([data_array, data_array, data_array, data_array])
-            .data(data_array)
-            .enter()
-                .append("td")
-                .text(function(d) {
-                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
-                    //source[0][d+"_max"], source[0][d+"_mean"];
-                    //return source[0][d+"_count"]
-                    return d;
-                })
-                //.style('background-color', d => groupMeta[d.name] == undefined ?  "white" : groupMeta[d.name].color)
-                .append("td")
-                .text(function(d) {
-                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
-                    //source[0][d+"_max"], source[0][d+"_mean"];
-                    //return source[0][d+"_count"]
-                    return d.min;
-                })
-                
-                .append("td")
-                .text(function(d) {
-                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
-                    //source[0][d+"_max"], source[0][d+"_mean"];
-                    //return source[0][d+"_count"]
-                    return d.max;
-                })
-                
-                .append("td")
-                .text(function(d) {
-                    //return source[0][d], source[0][d+"_count"], source[0][d+"_min"],
-                    //source[0][d+"_max"], source[0][d+"_mean"];
-                    //return source[0][d+"_count"]
-                    return d.mean;
-                })
-                */
-                
-
-        
-
-        /* adds the legend energy selection bars
-        hook.selectAll("legend_bar_field")
-            .data(groups)
-            .enter()
-                .append("rect")
-                    .attr("width", 207 )
-                    .attr("height", 23 )
-                    .attr("x", width - 213 )
-                    .attr("y", (_x,i) => -45 + 26 * i )
-                    .style('fill', x => x.include && !x.hidden ? x.color : 'white')
-                    .attr("stroke", 'black')
-                    .attr("stroke-width", '1')
-                    .attr("cursor", "pointer")
-                    //.on("click", onclick);
-
-        // adds the labels for the energy selection bars
-        hook.selectAll("legend_bar_text")
-            .data(groups)
-            .enter()
-                .append("text")
-                    .attr("x", width - 205 )
-                    .attr("y", (_x,i) => -29 + 26 * i )
-                    .attr("cursor", "pointer")
-                    .style('fill', x => x.hidden ? 'black' : 'white')
-                    .text((_x,i) => groups[i].key)
-                    .on("click", onclick);
-                */
 
     }
 
