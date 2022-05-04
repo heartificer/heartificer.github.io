@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
             <div class="container">
                 <div
                     v-if="weeklyHistories.length > 2"
-                    style="text-align: center; font-weight: 700;"
+                    style="text-align: center; font-weight: 700; cursor: pointer;"
                     @click="showFullHistory = !showFullHistory"
                 >
                     {{ showFullHistory ? "show brief history" : "show full history" }}
