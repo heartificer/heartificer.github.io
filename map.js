@@ -537,10 +537,10 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         // Legend
         drawLegend(svg, data_filt, region, subset, width, (_event, d) => { energy_type = d.key; console.log(d.key); removeBar(); drawBar(region, d.key); updateNationalDots(); });
 
-        // Table (If in Actual Mode)
+        // Table (if in Actual Mode)
         var svgTable = d3.select("#summary")
         svgTable.selectAll('*').remove();
-        if (! potential.checked) { 
+        if (!potential.checked) { 
             makeTable(svgTable, data_filt, region, subset, table_details(energy_type) ) 
         }
 
@@ -618,13 +618,14 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                     .attr("x", width - 205 + 37 - 5 - 25 )
                     .attr("y", (_x,i) => -29 + 26 * i )
                     .attr("cursor", "pointer")
-                    .style('fill', x => x.include && x.hidden ? 'black' : 'white')
+                    .attr("font-weight", 500)
+                    .style('fill', x => x.include ? 'black' : 'white')
                     .text((_x,i) => groups[i].key)
                     .on("click", onclick);        
     }
 
     // create a table with metrics
-    let makeTable = (hook, source, region, subset, onclick) => {
+    let makeTable = (hook, source, region, subset) => {
         hook = hook.append('div')
 
         // scope the source and add meta
@@ -640,67 +641,73 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         groups.sort((a,b) => { return a.key.localeCompare(b.key); });
         //console.log(group)
 
-        // instantiates the table object
-        var table = hook.append("table");
-        
-        //adds the header row to the table
-        // had to modify to get metric to be the first item
-        var header = table.append("thead").append("tr");
-        var header_groups = groups
-        header_groups.unshift({key:'Metric', color:'white'})
+        // if no groups, don't paint the table
+        if (groups.length > 0) {
 
-        header
-            .selectAll("th")
-            .data(header_groups)
-            .enter()
-                .append("th")
-                    .text((_x,i) => header_groups[i].key)
-                    .style('background-color', x => x.color)
-                    //.on("click", onclick);
-
-
-        var tablebody = table.append("tbody");
-        
-        var column_prefixes = Object.keys(subset).filter(f => ! f.startsWith("un")).sort()
-        var column_suffixes = [['Number of Plants', '_count'], ['Minimum Size (MW)', '_min'], 
-                                ['Maximum Size (MW)', '_max'], ['Average Size (MW)','_mean']]
-        var data_array = []
-        for(var i = 0; i < column_suffixes.length; i++) {
-                data_array[i] = [column_suffixes[i][0]]
-                for (var k = 0; k < column_prefixes.length ; k++ ){
-                    if (i == 0){ // don't multiply count by 1000
-                        data_array[i][k+1] = source[0][column_prefixes[k]+column_suffixes[i][1]]
-                    } else { // put GW scale values back in MW, too manythings are 0 in GW
-                        data_array[i][k+1] = Math.round(source[0][column_prefixes[k]+column_suffixes[i][1]]*1000)
+            // instantiates the table object
+            var table = hook.append("table");
+            
+            //adds the header row to the table
+            // had to modify to get metric to be the first item
+            var header = table.append("thead").append("tr");
+            var header_groups = groups;
+            header_groups.unshift({key:'Metric', color:'white'});
+            let width = 99 / groups.length;
+    
+            header
+                .selectAll("th")
+                .data(header_groups)
+                .enter()
+                    .append("th")
+                        .text((_x,i) => header_groups[i].key)
+                        .style('background-color', x => x.color)
+                        .style('width', `${ width }em`);
+                        //.on("click", onclick);
+    
+    
+            var tablebody = table.append("tbody");
+            
+            var column_prefixes = Object.keys(subset).filter(f => ! f.startsWith("un")).sort();
+            var column_suffixes = [['Number of Plants', '_count'], ['Minimum Size (MW)', '_min'], 
+                                    ['Maximum Size (MW)', '_max'], ['Average Size (MW)','_mean']]
+            var data_array = []
+            for(var i = 0; i < column_suffixes.length; i++) {
+                    data_array[i] = [column_suffixes[i][0]];
+                    for (var k = 0; k < column_prefixes.length ; k++ ){
+                        if (i == 0){ // don't multiply count by 1000
+                            data_array[i][k+1] = source[0][column_prefixes[k]+column_suffixes[i][1]]
+                        } else { // put GW scale values back in MW, too manythings are 0 in GW
+                            data_array[i][k+1] = Math.round(source[0][column_prefixes[k]+column_suffixes[i][1]]*1000)
+                        }
+                        
                     }
-                    
-                }
+            }
+    
+            tablebody. selectAll("tr").
+            //data([[1],[2],[3],[4]]).
+            data(data_array).
+            enter().
+            append("tr").
+            selectAll("td").
+            data(function (row, i) {
+                return row;
+            }).
+            enter().
+            append("td").
+            attr("class", "small").
+            text(function (d) {
+                return d;
+            });
+    
+            // put the table in the center
+            /*
+            let hook_width = document.querySelector('div').offsetWidth
+            var table_width = document.querySelector('table').offsetWidth
+            var pad = (hook_width-table_width)/2
+            console.log(hook_width, table_width, pad)
+            table.style('padding-left', `${pad}px`)
+            //*/
         }
-
-        tablebody. selectAll("tr").
-        //data([[1],[2],[3],[4]]).
-        data(data_array).
-        enter().
-        append("tr").
-        selectAll("td").
-        data(function (row, i) {
-            return row;
-        }).
-        enter().
-        append("td").
-        attr("class", "small").
-        text(function (d) {
-            return d;
-        });
-
-        // put the table in the center
-        let hook_width = document.querySelector('div').offsetWidth
-        var table_width = document.querySelector('table').offsetWidth
-        var pad = (hook_width-table_width)/2
-        console.log(hook_width, table_width, pad)
-        table.style('padding-left', `${pad}px`)
-
-
     }
 
     var table_details = function(hook, energy_type){
