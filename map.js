@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
     function cbClick(_e, region)
     {
         removeBar();
+        d3.select("#summary").selectAll('table').remove();
         drawBar(region)
     }
 
@@ -538,10 +539,9 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
         // Table (If in Actual Mode)
         var svgTable = d3.select("#summary")
-        //svgTable.transform(translate(width/2))
+        svgTable.selectAll('*').remove();
         if (! potential.checked) { 
-            svgTable.selectAll('*').remove();
-            makeTable(svgTable, data_filt, region, subset, width, table_details(energy_type) ) 
+            makeTable(svgTable, data_filt, region, subset, table_details(energy_type) ) 
         }
 
     }
@@ -624,10 +624,8 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
     }
 
     // create a table with metrics
-    let makeTable = (hook, source, region, subset, width, onclick) => {
+    let makeTable = (hook, source, region, subset, onclick) => {
         hook = hook.append('div')
-        hook.select('div').style('align', 'center')
-        //console.log(subset)
 
         // scope the source and add meta
         let groups = Object.keys(subset)
@@ -642,10 +640,9 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         groups.sort((a,b) => { return a.key.localeCompare(b.key); });
         //console.log(group)
 
-        // instantiates the legend object
+        // instantiates the table object
         var table = hook.append("table");
-        table.style()
-
+        
         //adds the header row to the table
         // had to modify to get metric to be the first item
         var header = table.append("thead").append("tr");
@@ -671,7 +668,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         for(var i = 0; i < column_suffixes.length; i++) {
                 data_array[i] = [column_suffixes[i][0]]
                 for (var k = 0; k < column_prefixes.length ; k++ ){
-                    if (i == 0){ // don't multiple sount by 1000
+                    if (i == 0){ // don't multiply count by 1000
                         data_array[i][k+1] = source[0][column_prefixes[k]+column_suffixes[i][1]]
                     } else { // put GW scale values back in MW, too manythings are 0 in GW
                         data_array[i][k+1] = Math.round(source[0][column_prefixes[k]+column_suffixes[i][1]]*1000)
@@ -695,6 +692,13 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         text(function (d) {
             return d;
         });
+
+        // put the table in the center
+        let hook_width = document.querySelector('div').offsetWidth
+        var table_width = document.querySelector('table').offsetWidth
+        var pad = (hook_width-table_width)/2
+        console.log(hook_width, table_width, pad)
+        table.style('padding-left', `${pad}px`)
 
 
     }
