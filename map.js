@@ -237,6 +237,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         removeBar();
         drawBar("National");
         setDotsMouseEvents();
+        document.getElementById("unzoomHint").style.display = "none";
     }
 
     function drawRegional(region){  
@@ -245,6 +246,7 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
         removeBar();
         drawBar(region);
         setDotsMouseEvents();
+        document.getElementById("unzoomHint").style.display = "inline-block";
     }
 
     function updateNationalDotSizes(){
