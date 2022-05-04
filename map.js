@@ -554,11 +554,13 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                            .map(group => {
                             let match = groupMeta[group];
                             match.include = region == "" || region == "National" ? true : !!subset[group];
+                            match.value = source[0][group];
                             return match;
                         });
 
         // sort energy types
-        groups.sort((a,b) => { return a.key.localeCompare(b.key); });
+        //groups.sort((a,b) => { return a.key.localeCompare(b.key); }); // sort by label
+        groups.sort((a,b) => { return a.value > b.value ? -1 : 1; });
 
         // legend object
         var legend = hook.append("g");
@@ -634,11 +636,13 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
                            .map(group => {
                             let match = groupMeta[group];
                             match.include = region == "" || region == "National" ? true : !!subset[group];
+                            match.value = source[0][group];
                             return match;
                         });
 
         // sort energy types
-        groups.sort((a,b) => { return a.key.localeCompare(b.key); });
+        //groups.sort((a,b) => { return a.key.localeCompare(b.key); }); // sort by label
+        groups.sort((a,b) => { return a.value > b.value ? -1 : 1; });
         //console.log(group)
 
         // if no groups, don't paint the table
