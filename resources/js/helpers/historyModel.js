@@ -3,7 +3,14 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
     Vue.component( 'historicitiness', {
         template: `
             <div class="container">
-                <div v-for="(weeklyHistory, idx1) in weeklyHistories" :key="idx1">
+                <div
+                    v-if="weeklyHistories.length > 2"
+                    style="text-align: center; font-weight: 700;"
+                    @click="showFullHistory = !showFullHistory"
+                >
+                    {{ showFullHistory ? "show brief history" : "show full history" }}
+                </div>
+                <div v-for="(weeklyHistory, idx1) in scopedWeeklyHistory" :key="idx1">
                     <hr v-if="idx1>0" />
                     <div class="row">
                         <div class="col">
@@ -23,12 +30,29 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
         `,
         data() {
             return {
+                showFullHistory: false,
                 weeklyHistories: [
+                    {
+                        when: 'May Week 01',
+                        actions: [
+                            { who: 'Sarah', what: 'added summary table'},
+                            { who: 'Aaron', what: 'worked deliverables and coding support'},
+                            { who: 'Jason', what: 'refactoring'},
+                        ]
+                    },
+                    {
+                        when: 'April Week 04',
+                        actions: [
+                            { who: 'Sarah', what: 'updated faq, added pumped hydropower source to data'},
+                            { who: 'Aaron', what: 'presentation refactoring: border, tooltips, background'},
+                            { who: 'Jason', what: 'cleaned up ui / refactoring, bug fixes'},
+                        ]
+                    },
                     {
                         when: 'April Week 03',
                         actions: [
-                            { who: 'Sarah', what: 'updated vis handling of "actua" data set'},
-                            { who: 'Aaron', what: 'added faq, updated tooltips and light refactor of backing javascript for vis'},
+                            { who: 'Sarah', what: 'updated vis handling of "actual" data set'},
+                            { who: 'Aaron', what: 'added faq, added map dots, updated tooltips and light refactor of backing javascript for vis'},
                             { who: 'Jason', what: 'refactoring'},
                         ]
                     },
@@ -65,6 +89,20 @@ document.addEventListener("DOMContentLoaded", function(event) { /* begin "DOMCon
                         ]
                     }
                 ]
+            }
+        },
+        computed: {
+            scopedWeeklyHistory: {
+                get(){
+                    let full_history = this.weeklyHistories;
+                    if (this.showFullHistory) {
+                        return full_history;
+                    } else {
+                        let brief_history = full_history.filter( (_h,i) => i < 3);
+                        return brief_history;
+                    }
+                },
+                set(){}
             }
         }
     });
