@@ -18,6 +18,14 @@ document.addEventListener("DOMContentLoaded", function(_event) { /* begin "DOMCo
 
     var mapdata;
 
+    // add the unzoom click to the unzoom hint
+    document.querySelector('#unzoomHint').addEventListener('click', event => {
+        event.preventDefault();
+            
+        drawNational();
+        drawNationalDots();
+    });
+
     // add on-click
     d3.select("#map").on("click", (e) => {
         let isOcean = e.path[0].tagName == 'svg';
