@@ -766,7 +766,9 @@ const updateSurveyAnchor = () => {
             let qy = document.getElementById(`q${q}RadioYes`).checked,
                 qn = document.getElementById(`q${q}RadioNo`).checked;
                 refreshedHref += `q${q}: ${ qy ? '1' : qn ? '0' : 'unselected'}%0D%0A`;
-        })        
+        })
+
+        refreshedHref += `%0D%0ATimestamped: ${ new Date() }`;
         surveyAnchor.href = refreshedHref;
     }
 }
