@@ -756,3 +756,17 @@ function tooltip_sleep()
 }
 
 var saver;
+
+const updateSurveyAnchor = () => {
+    let surveyAnchor = document.querySelector("#surveyAnchor");
+    if (surveyAnchor) {
+        let refreshedHref = 'mailto:urecasurvey@gmail.com?subject=ureca_survey&body=';
+        let questions = ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15'];
+        questions.forEach( (q,i) => {
+            let qy = document.getElementById(`q${q}RadioYes`).checked,
+                qn = document.getElementById(`q${q}RadioNo`).checked;
+                refreshedHref += `q${q}: ${ qy ? '1' : qn ? '0' : 'unselected'}%0D%0A`;
+        })        
+        surveyAnchor.href = refreshedHref;
+    }
+}

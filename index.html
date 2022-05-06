@@ -29,6 +29,10 @@
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#historyModal">
                       Show History
                     </button>
+                    &nbsp;
+                    <button type="button" class="btn btn-primary" onclick="(() => { document.getElementById('survey').style.left = '14em'; })()">
+                      Take Survey
+                    </button>
                     <!--p id="statusDetails"></p-->
                     <!--a id="locationDetails" target="_blank"></a-->
                   </div>
@@ -45,11 +49,227 @@
                         </ul>
                       </li>
                     </ul>
-                  </div>
-              </nav>
+                </div>
+            </nav>
             <div id="contentBorder">
               <div id="map" style="display: inline-block;"></div>
               <div id="chart" style="display: inline-block;"></div>
+              <div id="survey" style="display: inline-block; position: absolute; top: 3em; left: 200em; padding: 0.5em; background-color: rgb(174, 199, 232, 1); border: 2px black solid; z-index: 99;">
+                <table style="background-color: white">
+                  <thead>
+                    <tr>
+                      <th colspan="2">
+                        <div style="display:inline-block; position: relative; float:left;">
+                          <button type="button">
+                          <a id="surveyAnchor" href="mailto:urecasurvey@gmail.com?subject=ureca_survey&body=no%20response%20at%20this%20time" style="text-decoration: none; color: black;">Email</a>
+                          </button>
+                        </div>
+                        The U-RECA Survey!
+                        <button style="display:inline-block; position: relative; float: right;" onclick="(() => { document.getElementById('survey').style.left = '200em'; })()">
+                          Close
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q01RadioYes" name="q01Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q01Radio">Yes</label>
+                          <input type="radio" id="q01RadioNo" name="q01Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q01Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        01. Was the tool easy to access?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q02RadioYes" name="q02Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q02Radio">Yes</label>
+                          <input type="radio" id="q02RadioNo" name="q02Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q02Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        02. Was the legend easy to understand?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q03RadioYes" name="q03Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q03Radio">Yes</label>
+                          <input type="radio" id="q03RadioNo" name="q03Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q03Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        03. Did you understand the tool is providing real information on forms of sustainable energy?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q04RadioYes" name="q04Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q04Radio">Yes</label>
+                          <input type="radio" id="q04RadioNo" name="q04Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q04Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        04. Was there a form of sustainable energy you expected to be present - but was not?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q05RadioYes" name="q05Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q05Radio">Yes</label>
+                          <input type="radio" id="q05RadioNo" name="q05Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q05Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        05. Did the information for locations you reviewed match your intuition?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q06RadioYes" name="q06Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q06Radio">Yes</label>
+                          <input type="radio" id="q06RadioNo" name="q06Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q06Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        06. Did the density of sources of renewable energy match your expectations?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q07RadioYes" name="q07Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q07Radio">Yes</label>
+                          <input type="radio" id="q07RadioNo" name="q07Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q07Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        07. Did you notice the Actual / Potential slider control toggle?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q08RadioYes" name="q08Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q08Radio">Yes</label>
+                          <input type="radio" id="q08RadioNo" name="q08Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q08Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        08. Did you use the Actual / Potential slider control toggle?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q09RadioYes" name="q09Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q09Radio">Yes</label>
+                          <input type="radio" id="q09RadioNo" name="q09Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q09Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        09. Was the bar chart easy to read?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q10RadioYes" name="q10Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q10Radio">Yes</label>
+                          <input type="radio" id="q10RadioNo" name="q10Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q10Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        10. Did you apply filters to the bar chart?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q11RadioYes" name="q11Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q11Radio">Yes</label>
+                          <input type="radio" id="q11RadioNo" name="q11Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q11Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        11. Do you own your home?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q12RadioYes" name="q12Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q12Radio">Yes</label>
+                          <input type="radio" id="q12RadioNo" name="q12Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q12Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        12. Do you have a renewable system installed in/on your home?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q13RadioYes" name="q13Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q13Radio">Yes</label>
+                          <input type="radio" id="q13RadioNo" name="q13Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q13Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        13. Hae you ever considered purchasing a sustainable energy ssytem for your home?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q14RadioYes" name="q14Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q14Radio">Yes</label>
+                          <input type="radio" id="q14RadioNo" name="q14Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q14Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        14. Does the visualization tool compel you to consider converting to more sustainable energy?
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="surveyCapture">
+                        <div>
+                          <input type="radio" id="q15RadioYes" name="q15Radio" value="yes" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q15Radio">Yes</label>
+                          <input type="radio" id="q15RadioNo" name="q15Radio" value="no" unchecked onclick="updateSurveyAnchor()">
+                          <label for="q15Radio">No</label>
+                        </div>
+                      </td>
+                      <td class="surveyQuestion">
+                        15. Are you satisifed with your power provider's use of renewable energy sources?
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div id="options" class="row justify-content-end" style="position: relative; top: 0.250em; left: -0.3em; margin: auto; padding-top: .05em; width: 88.5em; height: 2.125em; border: 1px black solid;">
               <div class="col-4">
@@ -156,8 +376,7 @@
                   </div>
                 </div>
               </div>
-            </div>
-  
+            </div>  
         </div>
     </body>
 </html>

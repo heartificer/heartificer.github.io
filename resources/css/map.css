@@ -137,3 +137,10 @@ table {
     color: black;
   }
   
+.surveyQuestion {
+    width: 50em;
+    text-align: left;
+}
+.surveyCapture {
+    width: 7em;
+}
